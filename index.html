@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Jogo da Forca - Química e Ciências</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:linear-gradient(180deg,#8b5a2b,#6b3a14);color:#fff;height:100vh;overflow:hidden;padding:10px}
+#app{height:100%;max-width:1400px;margin:0 auto;display:flex;flex-direction:column;gap:8px;position:relative}
+h1{text-align:center;font-size:20px;padding:8px;background:linear-gradient(180deg,#e0995a,#a05e28);border-radius:10px;border:3px solid #4a2608}
+.tela{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
+.menu{flex:1;display:flex;align-items:center;justify-content:center;overflow-y:auto;padding:10px 0}
+.card{background:linear-gradient(180deg,#c17a3b,#7a4218);border:3px solid #4a2608;border-radius:14px;padding:24px;box-shadow:0 5px 0 #4a2608}
+.menu-card{max-width:600px;width:100%;text-align:center}
+.menu-card h2{font-size:24px;margin-bottom:18px}
+label{display:block;text-align:left;font-size:12px;color:#ffe6c4;font-weight:bold;letter-spacing:1.5px;margin-bottom:5px;margin-top:12px}
+select,input,textarea{width:100%;padding:12px;border:3px solid #4a2608;border-radius:10px;background:#fff8e7;color:#3d2415;font-size:15px;font-weight:bold;font-family:inherit}
+textarea{resize:vertical;min-height:70px;font-weight:normal}
+.btn{padding:14px;border:3px solid #4a2608;border-radius:12px;font-size:16px;font-weight:bold;cursor:pointer;color:#fff;width:100%;margin-top:8px;text-transform:uppercase;font-family:inherit}
+.btn-verde{background:linear-gradient(180deg,#6bcf70,#388e3c);box-shadow:0 5px 0 #1b5e20}
+.btn-vermelho{background:linear-gradient(180deg,#ef5350,#b71c1c);box-shadow:0 5px 0 #7f0000}
+.btn-azul{background:linear-gradient(180deg,#64b5f6,#1565c0);box-shadow:0 5px 0 #0d47a1}
+.btn-amarelo{background:linear-gradient(180deg,#f5c54a,#c98e1e);box-shadow:0 5px 0 #8b5e0a;color:#3d2415}
+.btn-roxo{background:linear-gradient(180deg,#b47fe0,#7e3fb8);box-shadow:0 5px 0 #4a1f7a}
+.btn-madeira{background:linear-gradient(180deg,#e0995a,#7a4218);box-shadow:0 5px 0 #4a2608}
+.btn-laranja{background:linear-gradient(180deg,#ff9a4a,#d9641f);box-shadow:0 5px 0 #8b3a08}
+.btn-cinza{background:linear-gradient(180deg,#a0a0a0,#606060);box-shadow:0 5px 0 #303030}
+.btn-pequeno{font-size:13px;padding:10px}
+.info{font-size:14px;color:#ffe6c4;margin-top:14px}
+.jogo{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:10px;min-height:0}
+.col{display:flex;flex-direction:column;gap:8px;min-height:0}
+.forca{flex:1;display:flex;align-items:center;justify-content:center;padding:8px;min-height:0}
+.forca svg{width:100%;height:100%;max-height:100%}
+.hud{display:flex;justify-content:space-around;padding:8px;background:rgba(0,0,0,.3);border-radius:10px;border:2px solid #4a2608;font-weight:bold;font-size:13px}
+.hud .v{color:#e8b83a;font-size:18px}
+.dica{background:linear-gradient(180deg,#fdf3dc,#f5e2b8);color:#1a0f08;padding:16px;border-radius:12px;border:3px solid #4a2608}
+.dica-t{font-size:11px;color:#7a4218;font-weight:bold;letter-spacing:2px;margin-bottom:6px}
+.dica-x{font-size:22px;font-weight:bold;line-height:1.3}
+.palavra{flex:1;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.2);border:2px solid #4a2608;border-radius:12px;padding:10px;min-height:80px}
+.palavra-x{font-size:clamp(28px,4vw,52px);font-weight:bold;letter-spacing:4px;text-align:center;word-break:break-all;font-family:Georgia,serif}
+.ok{color:#0a2540;background:linear-gradient(180deg,#a8e6a8,#6bcf70);padding:2px 10px;border-radius:6px;border:2px solid #1b5e20;display:inline-block;margin:2px;font-family:Georgia,serif;text-shadow:0 1px 0 rgba(255,255,255,.6);box-shadow:0 2px 0 #1b5e20}
+.vaz{color:#ffe6c4;opacity:.55;display:inline-block;margin:2px;font-family:Georgia,serif}
+.tec{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;padding:8px;background:rgba(0,0,0,.2);border:2px solid #4a2608;border-radius:12px}
+.t{padding:10px 0;border:2px solid #4a2608;background:linear-gradient(180deg,#fff8e7,#f0e0c0);color:#3d2415;font-size:16px;font-weight:bold;border-radius:8px;cursor:pointer;font-family:Georgia,serif}
+.t:disabled{cursor:not-allowed;opacity:.5}
+.t.c{background:linear-gradient(180deg,#a8e6a8,#6bcf70);color:#0a2540;opacity:1}
+.t.e{background:linear-gradient(180deg,#ef5350,#b71c1c);color:#fff;opacity:.7}
+.lista{max-height:400px;overflow-y:auto;background:rgba(0,0,0,.2);border-radius:10px;padding:10px;margin-top:10px}
+.item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid rgba(255,255,255,.1);font-size:13px;gap:8px}
+.item b{color:#ffe6c4}
+.item .del{background:#ef5350;color:#fff;border:2px solid #4a2608;border-radius:6px;padding:4px 10px;cursor:pointer;font-weight:bold;font-size:12px}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tab{flex:1;min-width:100px;padding:10px;background:rgba(0,0,0,.3);border:2px solid #4a2608;border-radius:10px;cursor:pointer;font-weight:bold;color:#ffe6c4;text-align:center;font-size:13px}
+.tab.ativa{background:linear-gradient(180deg,#e0995a,#7a4218);color:#fff}
+#overlayFim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:999;align-items:center;justify-content:center;padding:20px}
+#overlayFim.ativo{display:flex}
+.fim{padding:30px 40px;text-align:center;border:4px solid #4a2608;border-radius:20px;max-width:580px;width:100%;box-shadow:0 10px 30px rgba(0,0,0,.6);animation:entrar .3s ease;max-height:92vh;overflow-y:auto}
+@keyframes entrar{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.fim.v{background:linear-gradient(180deg,#5cb860,#2e7d32)}
+.fim.d{background:linear-gradient(180deg,#e35a5a,#991b1b)}
+.fim.aviso{background:linear-gradient(180deg,#c98548,#7a4218)}
+.fim .emoji{font-size:60px;margin-bottom:8px}
+.fim h2{font-size:30px;margin-bottom:10px;color:#fff}
+.fim .sub{font-size:15px;color:#fff;opacity:.9;margin-bottom:12px}
+.fim .p{font-size:40px;margin:16px 0;letter-spacing:6px;font-weight:bold;font-family:Georgia,serif;color:#fff;text-shadow:2px 2px 4px rgba(0,0,0,.4);word-break:break-all}
+.fim .stats{font-size:15px;color:#fff;margin-bottom:20px}
+.fim .btn{margin-top:8px}
+@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+.aluno-box{max-width:640px;width:100%}
+.aluno-box h2{font-size:24px;margin-bottom:10px;text-align:center}
+.aluno-box p{color:#ffe6c4;font-size:14px;margin-bottom:16px;line-height:1.5;text-align:center}
+.linha-add{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end}
+.linha-add .btn{margin-top:0;width:auto;padding:12px 20px;white-space:nowrap}
+.alunos-lista{background:rgba(0,0,0,.25);border-radius:10px;padding:10px;margin-top:14px;max-height:220px;overflow-y:auto}
+.aluno-item{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(255,248,231,.1);border-radius:8px;margin-bottom:6px;font-size:14px;font-weight:bold}
+.aluno-item .num{background:#c98548;color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;margin-right:10px}
+.aluno-item .nome{flex:1;text-align:left}
+.aluno-item .del{background:#ef5350;color:#fff;border:2px solid #4a2608;border-radius:6px;padding:3px 9px;cursor:pointer;font-size:12px;font-weight:bold}
+.vazio-lista{text-align:center;color:#ffe6c4;font-size:13px;font-style:italic;padding:14px}
+.dupla{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.times-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.time-box{border-radius:14px;padding:16px;border:4px solid #4a2608;min-height:180px}
+.time-a{background:linear-gradient(180deg,#64b5f6,#0d47a1)}
+.time-b{background:linear-gradient(180deg,#ef5350,#b71c1c)}
+.time-box h3{font-size:18px;text-align:center;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid rgba(255,255,255,.3);letter-spacing:1px}
+.time-box .jogador{padding:8px 12px;background:rgba(0,0,0,.25);border-radius:8px;margin-bottom:6px;font-size:14px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}
+.time-box .jogador .pos{background:rgba(255,255,255,.25);width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px}
+.time-box .vazio{text-align:center;font-style:italic;opacity:.7;padding:20px;font-size:13px}
+.time-info{text-align:center;font-size:13px;color:#ffe6c4;margin-top:12px}
+.placar-times{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+.time-placar{padding:10px;border-radius:10px;border:3px solid #4a2608;text-align:center;font-weight:bold}
+.time-placar.a{background:linear-gradient(180deg,#64b5f6,#0d47a1)}
+.time-placar.b{background:linear-gradient(180deg,#ef5350,#b71c1c)}
+.time-placar.ativo{box-shadow:0 0 0 4px #e8b83a, 0 0 20px #e8b83a}
+.time-placar .nome{font-size:12px;letter-spacing:1px;opacity:.9}
+.time-placar .pts{font-size:26px;font-family:Georgia,serif;margin-top:2px}
+.acoes-jogo{display:grid;grid-template-columns:2fr 1fr;gap:8px;margin-top:6px}
+.acoes-jogo .btn{margin-top:0;font-size:13px;padding:10px}
+.reg-card{max-width:1200px;width:100%;padding:20px}
+.reg-filtros{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+@media(max-width:900px){.reg-filtros{grid-template-columns:1fr 1fr}}
+.reg-tabela{max-height:360px;overflow-y:auto;background:#fff8e7;border-radius:10px;border:3px solid #4a2608}
+.reg-tabela table{width:100%;border-collapse:collapse;font-size:13px;color:#3d2415}
+.reg-tabela th{background:#a05e28;color:#fff;padding:10px;text-align:left;position:sticky;top:0;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.reg-tabela td{padding:8px 10px;border-bottom:1px solid rgba(122,66,24,.2)}
+.reg-tabela tr{cursor:pointer;transition:background .15s}
+.reg-tabela tbody tr:hover{background:#e8d5a8}
+.reg-tabela .acerto{color:#1b5e20;font-weight:bold}
+.reg-tabela .erro{color:#7f0000;font-weight:bold}
+.reg-tabela .time-a{color:#0d47a1;font-weight:bold}
+.reg-tabela .time-b{color:#b71c1c;font-weight:bold}
+.reg-tabela .ver-mais{color:#0d47a1;font-weight:bold;font-size:11px;text-decoration:underline}
+.reg-resumo{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.reg-stat{background:#fff8e7;border:3px solid #4a2608;border-radius:10px;padding:12px;text-align:center}
+.reg-stat .num{font-size:24px;font-weight:bold;color:#7a4218}
+.reg-stat .lbl{font-size:10px;color:#7a4218;font-weight:bold;letter-spacing:1px;margin-top:2px}
+.teclado-aviso{background:rgba(255,255,255,.15);padding:6px 10px;border-radius:8px;font-size:11px;color:#ffe6c4;text-align:center;margin-top:6px;font-weight:bold;letter-spacing:.5px}
+.palavras-info{background:rgba(100,150,255,.25);padding:5px 10px;border-radius:8px;font-size:11px;color:#e0f0ff;text-align:center;font-weight:bold;letter-spacing:.5px;border:1px solid rgba(100,150,255,.4)}
+#modalConfirm{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;align-items:center;justify-content:center;padding:20px}
+#modalConfirm.ativo{display:flex}
+.modal-box{background:linear-gradient(180deg,#c17a3b,#7a4218);border:4px solid #4a2608;border-radius:20px;padding:32px;max-width:640px;width:100%;text-align:center;box-shadow:0 15px 40px rgba(0,0,0,.7);animation:entrar .25s ease;max-height:92vh;overflow-y:auto}
+.modal-box.modal-grande{max-width:1000px}
+.modal-box .icone{font-size:56px;margin-bottom:12px}
+.modal-box h2{font-size:24px;color:#fff;margin-bottom:12px}
+.modal-box p{color:#ffe6c4;font-size:15px;line-height:1.5;margin-bottom:20px}
+.modal-box .resumo{background:rgba(0,0,0,.3);border-radius:10px;padding:14px;margin-bottom:18px;font-size:14px;text-align:left;color:#fff;line-height:1.6}
+.modal-box .resumo b{color:#ffe6c4}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-btns .btn{margin-top:0}
+.detalhe-box{max-width:800px}
+.detalhe-header{background:rgba(0,0,0,.3);border-radius:12px;padding:14px;margin-bottom:16px;text-align:left;font-size:13px;line-height:1.7;color:#fff}
+.detalhe-times{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.detalhe-time{border-radius:12px;padding:14px;border:3px solid #4a2608}
+.detalhe-time.a{background:linear-gradient(180deg,#64b5f6,#0d47a1)}
+.detalhe-time.b{background:linear-gradient(180deg,#ef5350,#b71c1c)}
+.detalhe-time h3{font-size:15px;text-align:center;margin-bottom:10px;padding-bottom:8px;border-bottom:2px solid rgba(255,255,255,.3);letter-spacing:1px}
+.detalhe-time .pontos{text-align:center;font-size:28px;font-weight:bold;font-family:Georgia,serif;margin-bottom:10px}
+.detalhe-time .aluno-det{background:rgba(0,0,0,.25);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.detalhe-time .aluno-det .nome{font-weight:bold;flex:1}
+.detalhe-time .aluno-det .res{font-size:11px;padding:2px 8px;border-radius:6px;font-weight:bold}
+.detalhe-time .aluno-det .res.ok{background:#1b5e20;color:#fff}
+.detalhe-time .aluno-det .res.no{background:#7f0000;color:#fff}
+.detalhe-time .aluno-det .res.int{background:#8b5e0a;color:#fff}
+
+/* EXPORTAÇÃO */
+.export-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.export-preview{background:#fff8e7;border:3px solid #4a2608;border-radius:10px;padding:12px;max-height:300px;overflow:auto;color:#3d2415;font-size:12px;text-align:left}
+.export-preview table{width:100%;border-collapse:collapse}
+.export-preview th{background:#a05e28;color:#fff;padding:6px 8px;text-align:left;font-size:11px;position:sticky;top:0}
+.export-preview td{padding:5px 8px;border-bottom:1px solid #ddd}
+.export-btn-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.export-btn-row .btn{margin-top:0}
+
+/* NOTAS */
+.nota-badge{display:inline-block;padding:4px 12px;border-radius:8px;font-weight:bold;font-size:14px}
+.nota-otima{background:#1b5e20;color:#fff}
+.nota-boa{background:#388e3c;color:#fff}
+.nota-regular{background:#f5c54a;color:#3d2415}
+.nota-baixa{background:#ef5350;color:#fff}
+.nota-input{width:70px;padding:6px;border:2px solid #4a2608;border-radius:6px;text-align:center;font-weight:bold;background:#fff}
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+<div id="overlayFim"></div>
+<div id="modalConfirm"></div>
+
+<script>
+/* ============================================================
+   BANCO DE PALAVRAS
+   ============================================================ */
+var PALAVRAS_PADRAO = [
+  /* ===== 1º ANO - QUÍMICA ===== */
+  {turma:"1º Ano", disc:"Química", p:"PRÓTON", d:"Partícula de carga positiva localizada no núcleo do átomo."},
+  {turma:"1º Ano", disc:"Química", p:"THOMSON", d:"Nome do modelo atômico conhecido como pudim de passas."},
+  {turma:"1º Ano", disc:"Química", p:"NÚCLEO", d:"Região central do átomo que concentra quase toda a sua massa."},
+  {turma:"1º Ano", disc:"Química", p:"MENDELEEV", d:"Nome do cientista que organizou a primeira versão da tabela periódica atual."},
+  {turma:"1º Ano", disc:"Química", p:"ELETRONEGATIVIDADE", d:"Força ou tendência de um átomo para atrair elétrons na ligação."},
+  {turma:"1º Ano", disc:"Química", p:"ÂNION", d:"Átomo que ganhou elétrons e ficou com carga negativa."},
+  {turma:"1º Ano", disc:"Química", p:"QUARKS", d:"Subpartículas fundamentais que formam os prótons e os nêutrons."},
+  {turma:"1º Ano", disc:"Química", p:"ÍON", d:"Átomo que possui carga elétrica por perder ou ganhar elétrons."},
+  {turma:"1º Ano", disc:"Química", p:"PERÍODOS", d:"Linhas horizontais da tabela periódica que indicam as camadas eletrônicas."},
+  {turma:"1º Ano", disc:"Química", p:"CÁTION", d:"Átomo que perdeu elétrons e ficou com carga positiva."},
+  {turma:"1º Ano", disc:"Química", p:"FLÚOR", d:"Elemento mais eletronegativo de toda a tabela periódica."},
+  {turma:"1º Ano", disc:"Química", p:"DALTON", d:"Nome do modelo atômico conhecido como bola de bilhar."},
+  {turma:"1º Ano", disc:"Química", p:"MOLÉCULA", d:"Agrupamento de átomos eletricamente neutros ligados entre si."},
+  {turma:"1º Ano", disc:"Química", p:"ISÓTOPOS", d:"Átomos que possuem o mesmo número de prótons, mas massas diferentes."},
+  {turma:"1º Ano", disc:"Química", p:"ELÉTRON", d:"Partícula com carga elétrica negativa que fica girando na eletrosfera."},
+  {turma:"1º Ano", disc:"Química", p:"BOHR", d:"Modelo atômico planetário que introduziu as órbitas de energia."},
+  {turma:"1º Ano", disc:"Química", p:"ÁTOMO", d:"Menor unidade fundamental da matéria que mantém as propriedades de um elemento."},
+  {turma:"1º Ano", disc:"Química", p:"FAMÍLIAS", d:"Colunas verticais da tabela periódica com elementos de propriedades parecidas."},
+  {turma:"1º Ano", disc:"Química", p:"RUTHERFORD", d:"Modelo atômico que descobriu o núcleo fazendo o experimento do ouro."},
+  {turma:"1º Ano", disc:"Química", p:"SUBLIMAÇÃO", d:"Mudança direta do estado sólido para o estado gasoso."},
+  {turma:"1º Ano", disc:"Química", p:"COVALENTE", d:"Ligação química baseada no compartilhamento de elétrons."},
+  {turma:"1º Ano", disc:"Química", p:"IÔNICA", d:"Ligação baseada na atração elétrica entre cátions e ânions."},
+  {turma:"1º Ano", disc:"Química", p:"DENSIDADE", d:"Propriedade da matéria que mede a quantidade de massa em um certo volume."},
+  {turma:"1º Ano", disc:"Química", p:"NOBRES", d:"Elementos químicos da última coluna da tabela que são muito estáveis."},
+  {turma:"1º Ano", disc:"Química", p:"ELASTICIDADE", d:"Capacidade de um material retornar à forma original após sofrer deformação."},
+  {turma:"1º Ano", disc:"Química", p:"CONDENSAÇÃO", d:"Mudança do estado gasoso para o estado líquido."},
+  {turma:"1º Ano", disc:"Química", p:"HOMOGÊNEA", d:"Mistura que apresenta uma única fase visível."},
+  {turma:"1º Ano", disc:"Química", p:"DESTILAÇÃO", d:"Processo de separação de misturas baseado na diferença de pontos de ebulição."},
+  {turma:"1º Ano", disc:"Química", p:"ATÔMICO", d:"Número que indica a quantidade de prótons existentes no núcleo de um átomo."},
+  {turma:"1º Ano", disc:"Química", p:"ISÓBAROS", d:"Átomos que possuem o mesmo número de massa e diferentes números de prótons."},
+
+  /* ===== 2º ANO - QUÍMICA ===== */
+  {turma:"2º Ano", disc:"Química", p:"DILUIÇÃO", d:"Adicionar solvente puro para diminuir a concentração da solução."},
+  {turma:"2º Ano", disc:"Química", p:"EXOTÉRMICA", d:"Reação química que libera calor para o ambiente."},
+  {turma:"2º Ano", disc:"Química", p:"REAGENTES", d:"Substâncias iniciais que ficam antes da seta na equação."},
+  {turma:"2º Ano", disc:"Química", p:"SOLVENTE", d:"Componente em maior quantidade que dissolve o soluto."},
+  {turma:"2º Ano", disc:"Química", p:"TONOSCOPIA", d:"Propriedade coligativa que estuda o abaixamento da pressão de vapor."},
+  {turma:"2º Ano", disc:"Química", p:"ENDOTÉRMICA", d:"Reação química que absorve calor do ambiente."},
+  {turma:"2º Ano", disc:"Química", p:"TENTATIVAS", d:"Nome do método mais básico de balanceamento químico."},
+  {turma:"2º Ano", disc:"Química", p:"TERMOQUÍMICA", d:"Estuda as trocas de calor nas reações químicas."},
+  {turma:"2º Ano", disc:"Química", p:"ELETRONEGATIVIDADE", d:"Força ou tendência de um átomo para atrair elétrons na ligação química."},
+  {turma:"2º Ano", disc:"Química", p:"SOLUÇÃO", d:"Mistura perfeitamente homogênea de soluto e solvente."},
+  {turma:"2º Ano", disc:"Química", p:"TYNDALL", d:"Efeito físico que explica por que a luz se espalha ao atravessar um coloide."},
+  {turma:"2º Ano", disc:"Química", p:"EBULIOSCOPIA", d:"Aumento da temperatura de ebulição do líquido pela adição de soluto."},
+  {turma:"2º Ano", disc:"Química", p:"SUSPENSÃO", d:"Mistura heterogênea cujas partículas são grandes e decantam."},
+  {turma:"2º Ano", disc:"Química", p:"ENTALPIA", d:"Energia ou conteúdo de calor de uma substância sob pressão constante."},
+  {turma:"2º Ano", disc:"Química", p:"COEFICIENTES", d:"Números inteiros usados para balancear uma equação química."},
+  {turma:"2º Ano", disc:"Química", p:"COLOIDE", d:"Mistura intermediária cujas partículas não sedimentam sozinhas."},
+  {turma:"2º Ano", disc:"Química", p:"CALORÍMETRO", d:"Aparelho isolado termicamente usado para medir o calor das reações."},
+  {turma:"2º Ano", disc:"Química", p:"OSMOSE", d:"Passagem espontânea de solvente em direção ao meio mais concentrado."},
+  {turma:"2º Ano", disc:"Química", p:"PRODUTOS", d:"Novas substâncias formadas no final da reação química."},
+  {turma:"2º Ano", disc:"Química", p:"COLIGATIVAS", d:"Propriedades de soluções que dependem apenas do número de partículas."},
+  {turma:"2º Ano", disc:"Química", p:"LAVOISIER", d:"Cientista responsável pela lei da conservação das massas."},
+  {turma:"2º Ano", disc:"Química", p:"SOLUTO", d:"Componente em menor quantidade que é dissolvido na solução."},
+  {turma:"2º Ano", disc:"Química", p:"GRAFITE", d:"Substância pura usada como padrão internacional para definir entalpia zero."},
+  {turma:"2º Ano", disc:"Química", p:"CRIOSCOPIA", d:"Diminuição da temperatura de congelamento do líquido pela adição de soluto."},
+  {turma:"2º Ano", disc:"Química", p:"SUPERSATURADA", d:"Solução que contém mais soluto do que o limite normal de solubilidade."},
+  {turma:"2º Ano", disc:"Química", p:"CINÉTICA", d:"Estudo da velocidade das reações químicas e seus fatores."},
+  {turma:"2º Ano", disc:"Química", p:"CATALISADOR", d:"Substância que acelera a reação sem ser consumida nela."},
+  {turma:"2º Ano", disc:"Química", p:"ATIVAÇÃO", d:"Energia mínima para iniciar uma reação química."},
+  {turma:"2º Ano", disc:"Química", p:"EQUILÍBRIO", d:"Estado em que as velocidades das reações direta e inversa se igualam."},
+  {turma:"2º Ano", disc:"Química", p:"LECHATELIER", d:"Princípio sobre a perturbação e deslocamento do equilíbrio químico."},
+
+  /* ===== 3º ANO - QUÍMICA ===== */
+  {turma:"3º Ano", disc:"Química", p:"ALICÍCLICAS", d:"Cadeias carbônicas fechadas que não possuem o anel benzênico."},
+  {turma:"3º Ano", disc:"Química", p:"ELETRONEGATIVIDADE", d:"Força ou tendência de um átomo para atrair elétrons na ligação química."},
+  {turma:"3º Ano", disc:"Química", p:"ÁLCOOL", d:"Função orgânica com hidroxila ligada a um carbono saturado, como o etanol."},
+  {turma:"3º Ano", disc:"Química", p:"INSATURADA", d:"Cadeia carbônica com pelo menos uma ligação dupla ou tripla entre carbonos."},
+  {turma:"3º Ano", disc:"Química", p:"OCTETO", d:"Teoria de estabilidade baseada em ter oito elétrons na camada de valência."},
+  {turma:"3º Ano", disc:"Química", p:"ALCANOS", d:"Cadeias abertas que possuem apenas ligações simples entre carbonos."},
+  {turma:"3º Ano", disc:"Química", p:"COVALENTE", d:"Tipo de ligação por compartilhamento de elétrons que o carbono realiza."},
+  {turma:"3º Ano", disc:"Química", p:"CARBONO", d:"Elemento químico central e obrigatório em todo composto orgânico."},
+  {turma:"3º Ano", disc:"Química", p:"TERCIÁRIO", d:"Carbono ligado diretamente a três outros átomos de carbono."},
+  {turma:"3º Ano", disc:"Química", p:"HETEROGÊNEA", d:"Cadeia carbônica com um átomo diferente entre dois carbonos."},
+  {turma:"3º Ano", disc:"Química", p:"ALCINOS", d:"Hidrocarbonetos de cadeia aberta com uma ligação tripla."},
+  {turma:"3º Ano", disc:"Química", p:"TETRAVALÊNCIA", d:"Capacidade do carbono de fazer exatamente quatro ligações químicas."},
+  {turma:"3º Ano", disc:"Química", p:"ALDEÍDO", d:"Função orgânica oxigenada com o grupo carbonila na ponta da cadeia."},
+  {turma:"3º Ano", disc:"Química", p:"ABERTA", d:"Cadeia carbônica que apresenta extremidades livres."},
+  {turma:"3º Ano", disc:"Química", p:"VALÊNCIA", d:"Nome da camada mais externa onde ocorrem as ligações químicas."},
+  {turma:"3º Ano", disc:"Química", p:"ACETONA", d:"Função orgânica da propanona, usada para remover esmaltes."},
+  {turma:"3º Ano", disc:"Química", p:"HIDROCARBONETOS", d:"Classe de compostos formados apenas por carbono e hidrogênio."},
+  {turma:"3º Ano", disc:"Química", p:"RAMIFICADA", d:"Cadeia que possui carbonos terciários ou quaternários."},
+  {turma:"3º Ano", disc:"Química", p:"AROMÁTICOS", d:"Hidrocarbonetos cíclicos que possuem o anel benzênico."},
+  {turma:"3º Ano", disc:"Química", p:"HOMOCÍCLICA", d:"Cadeia fechada que possui apenas átomos de carbono no ciclo."},
+  {turma:"3º Ano", disc:"Química", p:"ALCENOS", d:"Hidrocarbonetos de cadeia aberta com uma ligação dupla."},
+  {turma:"3º Ano", disc:"Química", p:"ÁCIDO", d:"Função orgânica do grupo carboxila, presente no vinagre."},
+  {turma:"3º Ano", disc:"Química", p:"ÉSTER", d:"Função produzida por esterificação que dá aroma artificial de frutas."},
+  {turma:"3º Ano", disc:"Química", p:"FENOL", d:"Função orgânica com hidroxila ligada diretamente ao anel aromático."},
+  {turma:"3º Ano", disc:"Química", p:"ISOMERIA", d:"Fenômeno onde compostos diferentes possuem a mesma fórmula molecular."},
+  {turma:"3º Ano", disc:"Química", p:"QUIRAL", d:"Carbono assimétrico ligado a quatro grupos totalmente diferentes."},
+  {turma:"3º Ano", disc:"Química", p:"COMBUSTÃO", d:"Reação de compostos orgânicos com oxigênio liberando muita energia."},
+  {turma:"3º Ano", disc:"Química", p:"AMINA", d:"Função nitrogenada derivada da amônia com cheiro característico de peixe."},
+  {turma:"3º Ano", disc:"Química", p:"POLIMERIZAÇÃO", d:"Reação de união de pequenas moléculas para formar macromoléculas."},
+  {turma:"3º Ano", disc:"Química", p:"SAPONIFICAÇÃO", d:"Reação entre gordura e base forte para a produção de sabão."},
+
+  /* ===== 6º ANO - CIÊNCIAS ===== */
+  {turma:"6º Ano", disc:"Ciências", p:"ATMOSFERA", d:"Camada gasosa que envolve a Terra e protege contra radiação."},
+  {turma:"6º Ano", disc:"Ciências", p:"CÉLULA", d:"Unidade estrutural e funcional básica de todos os seres vivos."},
+  {turma:"6º Ano", disc:"Ciências", p:"AR", d:"Mistura de gases indispensável para a respiração da maioria dos seres vivos."},
+  {turma:"6º Ano", disc:"Ciências", p:"LITOSFERA", d:"Camada sólida e rochosa mais externa do planeta Terra."},
+  {turma:"6º Ano", disc:"Ciências", p:"SOLO", d:"Recurso natural renovável essencial para a agricultura e fixação de plantas."},
+  {turma:"6º Ano", disc:"Ciências", p:"SOLUÇÃO", d:"Mistura homogênea de duas ou mais substâncias, como água e sal."},
+  {turma:"6º Ano", disc:"Ciências", p:"EVAPORAÇÃO", d:"Mudança da água do estado líquido para o estado gasoso de forma lenta."},
+  {turma:"6º Ano", disc:"Ciências", p:"DECANTAÇÃO", d:"Processo de separação de misturas heterogêneas por ação da gravidade."},
+  {turma:"6º Ano", disc:"Ciências", p:"UNICELULARES", d:"Seres vivos formados por uma única célula."},
+  {turma:"6º Ano", disc:"Ciências", p:"INTESTINO", d:"Órgão do sistema digestório responsável por absorver a água dos alimentos."},
+  {turma:"6º Ano", disc:"Ciências", p:"RESPIRAÇÃO", d:"Processo mecânico de entrada e saída de ar dos pulmões."},
+  {turma:"6º Ano", disc:"Ciências", p:"DIGESTÓRIO", d:"Conjunto de órgãos que quebram os alimentos em nutrientes menores."},
+  {turma:"6º Ano", disc:"Ciências", p:"MAGMÁTICA", d:"Tipo de rocha formada pelo resfriamento e solidificação do magma."},
+  {turma:"6º Ano", disc:"Ciências", p:"SEDIMENTAR", d:"Rocha formada pela compactação de fragmentos de outras rochas ao longo do tempo."},
+  {turma:"6º Ano", disc:"Ciências", p:"CONVERGENTE", d:"Lente que converge os raios de luz para um único ponto."},
+  {turma:"6º Ano", disc:"Ciências", p:"URINÁRIO", d:"Sistema responsável por filtrar o sangue e eliminar resíduos pela urina."},
+  {turma:"6º Ano", disc:"Ciências", p:"MICROSCÓPIO", d:"Instrumento com lentes usado para enxergar estruturas microscópicas."},
+  {turma:"6º Ano", disc:"Ciências", p:"CONDENSAÇÃO", d:"Passagem da água do estado gasoso para o líquido, formando as nuvens."},
+  {turma:"6º Ano", disc:"Ciências", p:"CARBOIDRATOS", d:"Nutrientes que servem como principal fonte de energia para o corpo."},
+  {turma:"6º Ano", disc:"Ciências", p:"EROSÃO", d:"Desgaste do solo e das rochas provocado por água, vento ou ações humanas."},
+  {turma:"6º Ano", disc:"Ciências", p:"IRRIGAÇÃO", d:"Técnica agrícola de fornecer água ao solo de forma controlada."},
+  {turma:"6º Ano", disc:"Ciências", p:"EXTENSÃO", d:"Propriedade da matéria de ocupar um lugar no espaço."},
+  {turma:"6º Ano", disc:"Ciências", p:"PROCARIONTES", d:"Células que não possuem um núcleo delimitado por membrana."},
+  {turma:"6º Ano", disc:"Ciências", p:"MITOCÔNDRIA", d:"Organela celular responsável pela produção de energia na respiração celular."},
+  {turma:"6º Ano", disc:"Ciências", p:"FÍGADO", d:"Glândula do sistema digestório que produz a bile."},
+  {turma:"6º Ano", disc:"Ciências", p:"METAMORFISMO", d:"Processo de transformação de rochas sob altas pressões e temperaturas."},
+  {turma:"6º Ano", disc:"Ciências", p:"RETILÍNEA", d:"Propriedade visual da luz de se propagar sempre em linha reta."},
+  {turma:"6º Ano", disc:"Ciências", p:"MIOPIA", d:"Defeito de visão corrigido com o uso de lentes divergentes."},
+  {turma:"6º Ano", disc:"Ciências", p:"VENTILAÇÃO", d:"Separação de misturas sólidas usando uma corrente de ar."},
+  {turma:"6º Ano", disc:"Ciências", p:"SUBLIMAÇÃO", d:"Passagem direta de uma substância do estado sólido para o gasoso."},
+
+  /* ===== 7º ANO - CIÊNCIAS ===== */
+  {turma:"7º Ano", disc:"Ciências", p:"FUNGI", d:"Reino dos seres vivos que engloba os cogumelos e leveduras."},
+  {turma:"7º Ano", disc:"Ciências", p:"INFECÇÃO", d:"Doença causada por vírus ou bactérias que pode ser evitada com vacinas."},
+  {turma:"7º Ano", disc:"Ciências", p:"VERTEBRADOS", d:"Animais que possuem esqueleto interno e coluna vertebral."},
+  {turma:"7º Ano", disc:"Ciências", p:"ANGIOSPERMAS", d:"Plantas que produzem flores e sementes protegidas por frutos."},
+  {turma:"7º Ano", disc:"Ciências", p:"BIOMA", d:"Grupo de ecossistemas com vegetação e clima característicos, como a Caatinga."},
+  {turma:"7º Ano", disc:"Ciências", p:"PARASITA", d:"Ser vivo que causa prejuízo ao hospedeiro do qual retira nutrientes."},
+  {turma:"7º Ano", disc:"Ciências", p:"BACTERIAS", d:"Organismos procariontes unicelulares pertencentes ao Reino Monera."},
+  {turma:"7º Ano", disc:"Ciências", p:"CNIDÁRIOS", d:"Animais com corpo gelatinoso e tentáculos queimantes, como as águas-vivas."},
+  {turma:"7º Ano", disc:"Ciências", p:"MUTUALISMO", d:"Relação ecológica onde ambos os seres se beneficiam e são dependentes."},
+  {turma:"7º Ano", disc:"Ciências", p:"ALAVANCA", d:"Tipo de máquina simples formada por uma barra rígida sobre um ponto de apoio."},
+  {turma:"7º Ano", disc:"Ciências", p:"CLIMÁTICA", d:"Mudança no estado do tempo ou padrões climáticos globais a longo prazo."},
+  {turma:"7º Ano", disc:"Ciências", p:"OZÔNIO", d:"Escudo de gás na atmosfera que protege a Terra dos raios ultravioleta."},
+  {turma:"7º Ano", disc:"Ciências", p:"HIV", d:"Vírus que ataca o sistema imunológico humano e causa a AIDS."},
+  {turma:"7º Ano", disc:"Ciências", p:"ECOLOGIA", d:"Estudo das interações dos seres vivos entre si e com o meio ambiente."},
+  {turma:"7º Ano", disc:"Ciências", p:"BRIÓFITAS", d:"Plantas de pequeno porte sem vasos condutores, como os musgos."},
+  {turma:"7º Ano", disc:"Ciências", p:"ARTRÓPODES", d:"Animais com apêndices articulados e exoesqueleto de quitina."},
+  {turma:"7º Ano", disc:"Ciências", p:"INVASORA", d:"Introdução de espécies exóticas que desequilibram um ecossistema nativo."},
+  {turma:"7º Ano", disc:"Ciências", p:"PETRÓLEO", d:"Combustíveis fósseis derivados da decomposição de matéria orgânica antiga."},
+  {turma:"7º Ano", disc:"Ciências", p:"IRRADIAÇÃO", d:"Forma de transmissão de calor que ocorre sem a necessidade de meio material."},
+  {turma:"7º Ano", disc:"Ciências", p:"CELSIUS", d:"Unidade de medida de temperatura usada oficialmente no Brasil."},
+  {turma:"7º Ano", disc:"Ciências", p:"ESTRÓBILO", d:"Estrutura reprodutiva das gimnospermas, como as pinhas dos pinheiros."},
+  {turma:"7º Ano", disc:"Ciências", p:"PLATELMINTOS", d:"Vermes de corpo achatado, como as tênias e planárias."},
+  {turma:"7º Ano", disc:"Ciências", p:"CERRADO", d:"Grande bioma brasileiro caracterizado por árvores de troncos tortuosos e solo ácido."},
+  {turma:"7º Ano", disc:"Ciências", p:"AUTÓTROFOS", d:"Seres que produzem seu próprio alimento através da fotossíntese."},
+  {turma:"7º Ano", disc:"Ciências", p:"CONVECÇÃO", d:"Transmissão de calor em fluidos baseada na diferença de densidades."},
+  {turma:"7º Ano", disc:"Ciências", p:"MALÁRIA", d:"Doença tropical transmitida pela picada do mosquito Anopheles."},
+  {turma:"7º Ano", disc:"Ciências", p:"LIQUENS", d:"Associação simbiótica entre fungos e algas microscópicas."},
+  {turma:"7º Ano", disc:"Ciências", p:"TERMODINÂMICO", d:"Processo industrial de produzir movimentos usando vapor sob pressão."},
+  {turma:"7º Ano", disc:"Ciências", p:"PORÍFEROS", d:"Grupo de animais invertebrados aquáticos com corpo cheio de poros."},
+  {turma:"7º Ano", disc:"Ciências", p:"ALTITUDE", d:"Fator climático associado à distância vertical de um ponto em relação ao mar."},
+
+  /* ===== 8º ANO - CIÊNCIAS ===== */
+  {turma:"8º Ano", disc:"Ciências", p:"NERVOSO", d:"Sistema responsável por coordenar as ações corporais e processar estímulos."},
+  {turma:"8º Ano", disc:"Ciências", p:"CORAÇÃO", d:"Órgão muscular que bombeia o sangue por todo o corpo humano."},
+  {turma:"8º Ano", disc:"Ciências", p:"PUBERDADE", d:"Período de transição da infância para a idade adulta com mudanças físicas."},
+  {turma:"8º Ano", disc:"Ciências", p:"TESTÍCULOS", d:"Glândulas reprodutivas masculinas que produzem os espermatozoides."},
+  {turma:"8º Ano", disc:"Ciências", p:"ASSEXUADA", d:"Tipo de reprodução que gera descendentes idênticos sem união de gametas."},
+  {turma:"8º Ano", disc:"Ciências", p:"HORMÔNIOS", d:"Substâncias químicas produzidas por glândulas que regulam funções do corpo."},
+  {turma:"8º Ano", disc:"Ciências", p:"PRESERVATIVO", d:"Método contraceptivo de barreira que também protege contra ISTs."},
+  {turma:"8º Ano", disc:"Ciências", p:"ARTÉRIA", d:"Vaso sanguíneo responsável por levar o sangue do coração para os tecidos."},
+  {turma:"8º Ano", disc:"Ciências", p:"GAMETAS", d:"Células reprodutivas especializadas, como o óvulo e o espermatozoide."},
+  {turma:"8º Ano", disc:"Ciências", p:"REFLEXO", d:"Ação involuntária e rápida coordenada pela medula espinhal."},
+  {turma:"8º Ano", disc:"Ciências", p:"NEURÔNIO", d:"Unidade básica do sistema nervoso responsável pela transmissão de impulsos."},
+  {turma:"8º Ano", disc:"Ciências", p:"PÂNCREAS", d:"Glândula que produz a insulina para controlar o açúcar no sangue."},
+  {turma:"8º Ano", disc:"Ciências", p:"IST", d:"Infecções transmitidas principalmente por meio do contato sexual."},
+  {turma:"8º Ano", disc:"Ciências", p:"ELETRICIDADE", d:"Estudo do movimento e comportamento das cargas elétricas em repouso ou ação."},
+  {turma:"8º Ano", disc:"Ciências", p:"EÓLICA", d:"Fonte de energia limpa obtida a partir da força dos ventos."},
+  {turma:"8º Ano", disc:"Ciências", p:"LEUCÓCITOS", d:"Células sanguíneas responsáveis pela defesa imunológica do organismo."},
+  {turma:"8º Ano", disc:"Ciências", p:"SINAPSE", d:"Região de comunicação química ou elétrica entre dois neurônios."},
+  {turma:"8º Ano", disc:"Ciências", p:"TESTOSTERONA", d:"Hormônio responsável pelas características sexuais secundárias masculinas."},
+  {turma:"8º Ano", disc:"Ciências", p:"MENSTRUAÇÃO", d:"Eliminação mensal do revestimento uterino quando não há fecundação."},
+  {turma:"8º Ano", disc:"Ciências", p:"DISJUNTOR", d:"Aparelho usado para interromper o fluxo elétrico em caso de sobrecarga."},
+  {turma:"8º Ano", disc:"Ciências", p:"ISOLANTE", d:"Propriedade de materiais que oferecem grande oposição à passagem de corrente elétrica."},
+  {turma:"8º Ano", disc:"Ciências", p:"TIREOIDE", d:"Glândula localizada no pescoço que regula o metabolismo do corpo."},
+  {turma:"8º Ano", disc:"Ciências", p:"FECUNDAÇÃO", d:"Encontro do espermatozoide com o óvulo, dando início a uma nova vida."},
+  {turma:"8º Ano", disc:"Ciências", p:"ÚTERO", d:"Órgão do sistema genital feminino onde o bebê se desenvolve."},
+  {turma:"8º Ano", disc:"Ciências", p:"GERADOR", d:"Dispositivo que converte energia mecânica ou química em energia elétrica."},
+  {turma:"8º Ano", disc:"Ciências", p:"HEMOGLOBINA", d:"Pigmento do sangue responsável pelo transporte de oxigênio."},
+  {turma:"8º Ano", disc:"Ciências", p:"CEREBELO", d:"Parte do sistema nervoso central que controla o equilíbrio corporal."},
+  {turma:"8º Ano", disc:"Ciências", p:"ADRENALINA", d:"Hormônio do estresse que acelera os batimentos cardíacos em perigo."},
+  {turma:"8º Ano", disc:"Ciências", p:"VASECTOMIA", d:"Método contraceptivo cirúrgico definitivo realizado nos homens."},
+  {turma:"8º Ano", disc:"Ciências", p:"OHM", d:"Unidade de medida de resistência elétrica no Sistema Internacional."},
+
+  /* ===== 9º ANO - CIÊNCIAS ===== */
+  {turma:"9º Ano", disc:"Ciências", p:"ÁTOMO", d:"Unidade fundamental da matéria composta por núcleo e eletrosfera."},
+  {turma:"9º Ano", disc:"Ciências", p:"PERIÓDICA", d:"Tabela que organiza todos os elementos químicos conhecidos."},
+  {turma:"9º Ano", disc:"Ciências", p:"DNA", d:"Molécula em espiral que carrega as instruções genéticas dos seres vivos."},
+  {turma:"9º Ano", disc:"Ciências", p:"SELEÇÃO", d:"Mecanismo evolutivo proposto por Darwin onde os mais aptos sobrevivem."},
+  {turma:"9º Ano", disc:"Ciências", p:"BIGBANG", d:"Grande explosão teórica que deu origem ao universo conhecido."},
+  {turma:"9º Ano", disc:"Ciências", p:"FUSÃO", d:"Mudança física da matéria do estado sólido para o líquido."},
+  {turma:"9º Ano", disc:"Ciências", p:"HETEROGÊNEA", d:"Tipo de mistura que apresenta duas ou mais fases visíveis."},
+  {turma:"9º Ano", disc:"Ciências", p:"ACELERAÇÃO", d:"Grandeza da física que mede a mudança de velocidade no tempo."},
+  {turma:"9º Ano", disc:"Ciências", p:"INÉRCIA", d:"Tendência de um corpo em repouso ou movimento de manter seu estado atual."},
+  {turma:"9º Ano", disc:"Ciências", p:"GENE", d:"Segmento do DNA responsável por determinar uma característica específica."},
+  {turma:"9º Ano", disc:"Ciências", p:"NEWTON", d:"Cientista que formulou as três leis fundamentais do movimento mecânico."},
+  {turma:"9º Ano", disc:"Ciências", p:"REAÇÃO", d:"Processo de transformação de uma substância em outra com quebra de ligações."},
+  {turma:"9º Ano", disc:"Ciências", p:"GENÉTICA", d:"Área da biologia que estuda os mecanismos de transmissão hereditária."},
+  {turma:"9º Ano", disc:"Ciências", p:"VIALÁCTEA", d:"Galáxia espiral onde está localizado o nosso Sistema Solar."},
+  {turma:"9º Ano", disc:"Ciências", p:"ASTRONOMIA", d:"Estudo do movimento dos astros e dos corpos celestes no espaço."},
+  {turma:"9º Ano", disc:"Ciências", p:"METAIS", d:"Substâncias simples localizadas no lado esquerdo da tabela periódica."},
+  {turma:"9º Ano", disc:"Ciências", p:"IÔNICA", d:"Ligação química gerada pela atração entre íons de cargas opostas."},
+  {turma:"9º Ano", disc:"Ciências", p:"FENÓTIPO", d:"Conjunto de características observáveis de um indivíduo determinadas pelos genes."},
+  {turma:"9º Ano", disc:"Ciências", p:"ESTRELA", d:"Astro luminoso que produz energia através de fusão nuclear em seu núcleo."},
+  {turma:"9º Ano", disc:"Ciências", p:"COVALENTE", d:"Ligação química caracterizada pelo compartilhamento de pares de elétrons."},
+  {turma:"9º Ano", disc:"Ciências", p:"RAIO", d:"Propriedade periódica que mede o tamanho médio de um átomo isolado."},
+  {turma:"9º Ano", disc:"Ciências", p:"VELOCIDADE", d:"Grandeza física obtida pela razão entre o espaço percorrido e o tempo."},
+  {turma:"9º Ano", disc:"Ciências", p:"MUTAÇÕES", d:"Alterações bruscas no material genético que geram variabilidade."},
+  {turma:"9º Ano", disc:"Ciências", p:"BURACONEGRO", d:"Estágio final de evolução de uma estrela massiva com gravidade extrema."},
+  {turma:"9º Ano", disc:"Ciências", p:"COEFICIENTES", d:"Números inseridos antes das fórmulas para balancear equações químicas."},
+  {turma:"9º Ano", disc:"Ciências", p:"GENÓTIPO", d:"Composição genética total de um indivíduo herdada de seus pais."},
+  {turma:"9º Ano", disc:"Ciências", p:"GRAVIDADE", d:"Força de atração invisível que a Terra exerce sobre os corpos ao seu redor."},
+  {turma:"9º Ano", disc:"Ciências", p:"ANOLUZ", d:"Unidade de distância usada na astronomia para medir espaços cósmicos."},
+  {turma:"9º Ano", disc:"Ciências", p:"RADIOATIVIDADE", d:"Fenômeno de decomposição de núcleos instáveis com emissão de partículas."}
+];
+
+var PALAVRAS = [];
+var REGISTROS = [];
+var app = document.getElementById("app");
+var jogo = {palavra:"", dica:"", turma:"", disc:"", certas:[], erradas:[], erros:0, finalizado:false, acertos:0, jogadas:[], aluno:"", time:"", rodadaId:""};
+var ultimasCertas = [];
+var telaProfAba = "add";
+
+var timeA = [];
+var timeB = [];
+var filaRodada = [];
+var indiceAlunoAtual = 0;
+var turmaRodada = "";
+var discRodada = "";
+var pontosA = 0;
+var pontosB = 0;
+var rodadaIdAtual = "";
+var palavrasUsadasRodada = [];
+var exportAba = "completo";
+
+function carregarPalavras(){
+  try{
+    var salvas = localStorage.getItem("forca_palavras_v13");
+    if(salvas){ PALAVRAS = JSON.parse(salvas); }
+    else { PALAVRAS = PALAVRAS_PADRAO.slice(); salvarPalavras(); }
+  }catch(e){ PALAVRAS = PALAVRAS_PADRAO.slice(); }
+}
+function salvarPalavras(){
+  try{ localStorage.setItem("forca_palavras_v13", JSON.stringify(PALAVRAS)); }catch(e){}
+}
+function carregarRegistros(){
+  try{
+    var r = localStorage.getItem("forca_registros_v13");
+    REGISTROS = r ? JSON.parse(r) : [];
+  }catch(e){ REGISTROS = []; }
+}
+function salvarRegistros(){
+  try{ localStorage.setItem("forca_registros_v13", JSON.stringify(REGISTROS)); }catch(e){}
+}
+
+function semAcento(s){ return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase(); }
+function $(id){ return document.getElementById(id); }
+function getTurmas(){
+  var t = [];
+  for(var i=0;i<PALAVRAS.length;i++){
+    if(t.indexOf(PALAVRAS[i].turma) === -1) t.push(PALAVRAS[i].turma);
+  }
+  t.sort();
+  return t;
+}
+function getDisc(turma){
+  var d = [];
+  for(var i=0;i<PALAVRAS.length;i++){
+    if(PALAVRAS[i].turma === turma && d.indexOf(PALAVRAS[i].disc) === -1) d.push(PALAVRAS[i].disc);
+  }
+  return d;
+}
+function formatarData(iso){
+  var d = new Date(iso);
+  return String(d.getDate()).padStart(2,"0") + "/" +
+         String(d.getMonth()+1).padStart(2,"0") + "/" +
+         d.getFullYear() + " " +
+         String(d.getHours()).padStart(2,"0") + ":" +
+         String(d.getMinutes()).padStart(2,"0");
+}
+function formatarDataSo(iso){
+  var d = new Date(iso);
+  return String(d.getDate()).padStart(2,"0") + "/" +
+         String(d.getMonth()+1).padStart(2,"0") + "/" +
+         d.getFullYear();
+}
+function dataParaInput(iso){
+  var d = new Date(iso);
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function shuffle(arr){
+  var a = arr.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = a[i]; a[i] = a[j]; a[j] = a[j]; j = tmp;
+  }
+  return a;
+}
+function gerarRodadaId(){
+  return "R" + Date.now() + "_" + Math.floor(Math.random()*10000);
+}
+function baixarArquivo(nome, conteudo, tipo){
+  var blob = new Blob(["\uFEFF" + conteudo], {type: tipo || "text/csv;charset=utf-8;"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = nome;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function copiarParaClipboard(texto){
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(texto).then(function(){
+      alert("✅ Copiado! Cole no Excel ou Google Sheets (Ctrl+V)");
+    }).catch(function(){
+      fallbackCopiar(texto);
+    });
+  } else {
+    fallbackCopiar(texto);
+  }
+}
+function fallbackCopiar(texto){
+  var ta = document.createElement("textarea");
+  ta.value = texto;
+  ta.style.position = "fixed";
+  ta.style.left = "-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  try{
+    document.execCommand("copy");
+    alert("✅ Copiado! Cole no Excel ou Google Sheets (Ctrl+V)");
+  }catch(e){
+    alert("❌ Não foi possível copiar. Tente exportar CSV.");
+  }
+  document.body.removeChild(ta);
+}
+
+function sortearPalavra(){
+  var todas = [];
+  for(var i=0;i<PALAVRAS.length;i++){
+    if(PALAVRAS[i].turma === turmaRodada && PALAVRAS[i].disc === discRodada) todas.push(PALAVRAS[i]);
+  }
+  if(todas.length === 0) return null;
+  var naoUsadas = [];
+  for(var j=0;j<todas.length;j++){
+    if(palavrasUsadasRodada.indexOf(todas[j].p) === -1) naoUsadas.push(todas[j]);
+  }
+  if(naoUsadas.length > 0){
+    var escolhida = naoUsadas[Math.floor(Math.random() * naoUsadas.length)];
+    palavrasUsadasRodada.push(escolhida.p);
+    return escolhida;
+  }
+  var ultimaUsada = palavrasUsadasRodada[palavrasUsadasRodada.length - 1];
+  var disponiveisReset = [];
+  for(var k=0;k<todas.length;k++){
+    if(todas[k].p !== ultimaUsada) disponiveisReset.push(todas[k]);
+  }
+  if(disponiveisReset.length === 0) disponiveisReset = todas;
+  var novaEscolha = disponiveisReset[Math.floor(Math.random() * disponiveisReset.length)];
+  palavrasUsadasRodada = [novaEscolha.p];
+  return novaEscolha;
+}
+
+function tecladoFisicoHandler(e){
+  if(!jogo.palavra) return;
+  if(jogo.finalizado) return;
+  var tag = (e.target.tagName || "").toLowerCase();
+  if(tag === "input" || tag === "textarea" || tag === "select") return;
+  if(e.ctrlKey || e.altKey || e.metaKey) return;
+  var letra = (e.key || "").toUpperCase();
+  if(!/^[A-Z]$/.test(letra)) return;
+  e.preventDefault();
+  jogarLetra(letra);
+}
+document.addEventListener("keydown", tecladoFisicoHandler);
+
+function abrirModal(html){
+  $("modalConfirm").innerHTML = html;
+  $("modalConfirm").classList.add("ativo");
+}
+function fecharModal(){
+  $("modalConfirm").classList.remove("ativo");
+  $("modalConfirm").innerHTML = "";
+}
+
+function telaMenu(){
+  jogo.palavra = "";
+  fecharModal();
+  $("overlayFim").classList.remove("ativo");
+  var turmas = getTurmas();
+  var opcoes = "";
+  for(var i=0;i<turmas.length;i++){
+    opcoes += '<option value="' + turmas[i] + '">' + turmas[i] + '</option>';
+  }
+  app.innerHTML = '<h1>🎓 JOGO DA FORCA</h1>' +
+    '<div class="tela"><div class="menu"><div class="card menu-card">' +
+    '<h2>🎮 Iniciar Jogo</h2>' +
+    '<label>TURMA</label>' +
+    '<select id="selTurma">' + opcoes + '</select>' +
+    '<label>DISCIPLINA</label>' +
+    '<select id="selDisc"></select>' +
+    '<button class="btn btn-verde" id="btnComecar" style="margin-top:18px">▶️ COMEÇAR</button>' +
+    '<div class="info" id="infoPalavras"></div>' +
+    '<div class="dupla">' +
+    '<button class="btn btn-amarelo" id="btnRegistros">📊 Registros e Notas</button>' +
+    '<button class="btn btn-madeira" id="btnProf">👨‍🏫 Professor</button>' +
+    '</div>' +
+    '</div></div></div>';
+  $("selTurma").onchange = atualizarDisc;
+  $("btnComecar").onclick = telaRegistrarAlunos;
+  $("btnRegistros").onclick = telaRegistros;
+  $("btnProf").onclick = telaProfessor;
+  atualizarDisc();
+}
+
+function atualizarDisc(){
+  var turma = $("selTurma").value;
+  var discs = getDisc(turma);
+  var html = "";
+  for(var i=0;i<discs.length;i++){
+    html += '<option value="' + discs[i] + '">' + discs[i] + '</option>';
+  }
+  $("selDisc").innerHTML = html;
+  var disc = $("selDisc").value;
+  var total = 0;
+  for(var j=0;j<PALAVRAS.length;j++){
+    if(PALAVRAS[j].turma === turma && PALAVRAS[j].disc === disc) total++;
+  }
+  $("infoPalavras").innerHTML = "📚 " + total + " palavras disponíveis";
+  $("selDisc").onchange = atualizarDisc;
+}
+
+function telaRegistrarAlunos(){
+  jogo.palavra = "";
+  fecharModal();
+  $("overlayFim").classList.remove("ativo");
+  turmaRodada = $("selTurma").value;
+  discRodada = $("selDisc").value;
+  timeA = []; timeB = []; filaRodada = [];
+  indiceAlunoAtual = 0;
+  pontosA = 0; pontosB = 0;
+  rodadaIdAtual = gerarRodadaId();
+  palavrasUsadasRodada = [];
+  renderRegistrarAlunos();
+}
+
+function renderRegistrarAlunos(){
+  var total = timeA.length + timeB.length;
+  var html = '<h1>🎓 JOGO DA FORCA</h1>' +
+    '<div class="tela"><div class="menu"><div class="card aluno-box">' +
+    '<h2>✍️ Registrar Alunos</h2>' +
+    '<p>Adicione os alunos que vão participar. Eles serão divididos em <b>2 times aleatórios</b>.</p>' +
+    '<label>Nome completo do aluno</label>' +
+    '<div class="linha-add">' +
+    '<input type="text" id="inputAluno" placeholder="Digite o nome completo" autocomplete="off">' +
+    '<button class="btn btn-azul" id="btnAdicionar">➕ Adicionar</button>' +
+    '</div>' +
+    '<div class="alunos-lista" id="listaAlunosBox"></div>' +
+    '<div class="info">Turma: <b>' + turmaRodada + '</b> | Disciplina: <b>' + discRodada + '</b> | Total: <b>' + total + '</b> aluno(s)</div>' +
+    '<button class="btn btn-roxo" id="btnSortear" style="margin-top:14px">🎲 SORTEAR TIMES E COMEÇAR</button>' +
+    '<button class="btn btn-madeira" id="btnVoltar">⬅️ VOLTAR</button>' +
+    '<div id="avisoAluno" style="margin-top:12px"></div>' +
+    '</div></div></div>';
+  app.innerHTML = html;
+  renderListaAlunos();
+  $("btnAdicionar").onclick = adicionarAlunoNaFila;
+  $("btnSortear").onclick = sortearTimes;
+  $("btnVoltar").onclick = telaMenu;
+  var input = $("inputAluno");
+  input.focus();
+  input.addEventListener("keypress", function(e){
+    if(e.key === "Enter") adicionarAlunoNaFila();
+  });
+}
+
+function renderListaAlunos(){
+  var box = $("listaAlunosBox");
+  if(!box) return;
+  var todos = timeA.concat(timeB);
+  if(todos.length === 0){
+    box.innerHTML = '<div class="vazio-lista">Nenhum aluno adicionado ainda</div>';
+    return;
+  }
+  var html = '';
+  for(var i=0;i<todos.length;i++){
+    html += '<div class="aluno-item">' +
+      '<span class="num">' + (i+1) + '</span>' +
+      '<span class="nome">' + todos[i] + '</span>' +
+      '<button class="del" onclick="removerAlunoFila(' + i + ')">🗑️</button>' +
+      '</div>';
+  }
+  box.innerHTML = html;
+}
+
+function adicionarAlunoNaFila(){
+  var input = $("inputAluno");
+  var nome = input.value.trim();
+  var aviso = $("avisoAluno");
+  aviso.innerHTML = "";
+  if(nome.length < 3){
+    aviso.innerHTML = '<div style="background:rgba(251,191,36,.2);color:#fde68a;padding:10px;border-radius:8px;font-size:14px;font-weight:bold">⚠️ Digite o nome completo (mínimo 3 letras)</div>';
+    return;
+  }
+  var todos = timeA.concat(timeB);
+  for(var i=0;i<todos.length;i++){
+    if(todos[i].toLowerCase() === nome.toLowerCase()){
+      aviso.innerHTML = '<div style="background:rgba(251,191,36,.2);color:#fde68a;padding:10px;border-radius:8px;font-size:14px;font-weight:bold">⚠️ Esse aluno já foi adicionado</div>';
+      return;
+    }
+  }
+  timeA.push(nome);
+  input.value = "";
+  input.focus();
+  renderListaAlunos();
+  var infoB = document.querySelector(".info b:last-child");
+  if(infoB) infoB.textContent = (timeA.length + timeB.length);
+}
+
+function removerAlunoFila(i){
+  var todos = timeA.concat(timeB);
+  todos.splice(i, 1);
+  timeA = todos.slice();
+  timeB = [];
+  renderListaAlunos();
+  var infoB = document.querySelector(".info b:last-child");
+  if(infoB) infoB.textContent = timeA.length;
+}
+
+function sortearTimes(){
+  var aviso = $("avisoAluno");
+  aviso.innerHTML = "";
+  var todos = timeA.slice();
+  if(todos.length < 2){
+    aviso.innerHTML = '<div style="background:rgba(251,191,36,.2);color:#fde68a;padding:10px;border-radius:8px;font-size:14px;font-weight:bold">⚠️ Adicione pelo menos 2 alunos</div>';
+    return;
+  }
+  var opcoes = [];
+  for(var i=0;i<PALAVRAS.length;i++){
+    if(PALAVRAS[i].turma === turmaRodada && PALAVRAS[i].disc === discRodada) opcoes.push(PALAVRAS[i]);
+  }
+  if(opcoes.length === 0){
+    aviso.innerHTML = '<div style="background:rgba(251,191,36,.2);color:#fde68a;padding:10px;border-radius:8px;font-size:14px;font-weight:bold">⚠️ Nenhuma palavra cadastrada</div>';
+    return;
+  }
+  var embaralhados = shuffle(todos);
+  timeA = []; timeB = [];
+  for(var k=0; k<embaralhados.length; k++){
+    if(k % 2 === 0) timeA.push(embaralhados[k]);
+    else timeB.push(embaralhados[k]);
+  }
+  filaRodada = [];
+  var maxLen = Math.max(timeA.length, timeB.length);
+  for(var m=0; m<maxLen; m++){
+    if(m < timeA.length) filaRodada.push({nome: timeA[m], time: "A"});
+    if(m < timeB.length) filaRodada.push({nome: timeB[m], time: "B"});
+  }
+  pontosA = 0; pontosB = 0;
+  indiceAlunoAtual = 0;
+  palavrasUsadasRodada = [];
+  mostrarTimesFormados();
+}
+
+function mostrarTimesFormados(){
+  var totalPalavras = 0;
+  for(var i=0;i<PALAVRAS.length;i++){
+    if(PALAVRAS[i].turma === turmaRodada && PALAVRAS[i].disc === discRodada) totalPalavras++;
+  }
+  var podeRepetir = filaRodada.length > totalPalavras;
+
+  var html = '<h1>🎲 TIMES SORTEADOS</h1>' +
+    '<div class="tela"><div class="menu"><div class="card aluno-box" style="max-width:760px">' +
+    '<h2>⚔️ Confronto</h2>' +
+    '<p>Os alunos foram divididos aleatoriamente em 2 times. Eles jogarão alternando.</p>' +
+    '<div class="times-wrap">' +
+    '<div class="time-box time-a"><h3>🔵 TIME AZUL</h3>';
+  if(timeA.length === 0) html += '<div class="vazio">Vazio</div>';
+  else for(var i=0;i<timeA.length;i++){
+    html += '<div class="jogador"><span>' + timeA[i] + '</span><span class="pos">' + (i+1) + '</span></div>';
+  }
+  html += '</div><div class="time-box time-b"><h3>🔴 TIME VERMELHO</h3>';
+  if(timeB.length === 0) html += '<div class="vazio">Vazio</div>';
+  else for(var j=0;j<timeB.length;j++){
+    html += '<div class="jogador"><span>' + timeB[j] + '</span><span class="pos">' + (j+1) + '</span></div>';
+  }
+  html += '</div></div>' +
+    '<div class="time-info">🎮 As rodadas serão alternadas: <b>Azul → Vermelho → Azul → Vermelho...</b></div>' +
+    '<div class="time-info" style="background:rgba(100,150,255,.25);padding:8px;border-radius:8px;margin-top:8px">' +
+    '📚 <b>' + totalPalavras + '</b> palavras disponíveis para <b>' + filaRodada.length + '</b> aluno(s). ' +
+    (podeRepetir ? '<span style="color:#ffb74d">Haverá repetição (faltam palavras).</span>' : '<span style="color:#81c784">Nenhuma palavra vai repetir!</span>') +
+    '</div>' +
+    '<button class="btn btn-verde" id="btnIniciar" style="margin-top:14px">▶️ INICIAR RODADAS</button>' +
+    '<button class="btn btn-madeira" id="btnVoltarTimes">⬅️ VOLTAR</button>' +
+    '</div></div></div>';
+  app.innerHTML = html;
+  $("btnIniciar").onclick = iniciarRodadas;
+  $("btnVoltarTimes").onclick = telaRegistrarAlunos;
+}
+
+function iniciarRodadas(){
+  indiceAlunoAtual = 0;
+  palavrasUsadasRodada = [];
+  iniciarPartidaAlunoAtual();
+}
+
+function iniciarPartidaAlunoAtual(){
+  var jogador = filaRodada[indiceAlunoAtual];
+  var p = sortearPalavra();
+  if(!p){
+    alert("Nenhuma palavra cadastrada para esta turma/disciplina!");
+    telaMenu();
+    return;
+  }
+  jogo.acertos = 0;
+  jogo.jogadas = [];
+  jogo.turma = turmaRodada;
+  jogo.disc = discRodada;
+  jogo.aluno = jogador.nome;
+  jogo.time = jogador.time;
+  jogo.palavra = p.p.toUpperCase();
+  jogo.dica = p.d;
+  jogo.certas = [];
+  jogo.erradas = [];
+  jogo.erros = 0;
+  jogo.finalizado = false;
+  jogo.rodadaId = rodadaIdAtual;
+  ultimasCertas = [];
+  telaJogo();
+}
+
+function telaJogo(){
+  fecharModal();
+  $("overlayFim").classList.remove("ativo");
+  var total = filaRodada.length;
+  var atual = indiceAlunoAtual + 1;
+  var corTime = jogo.time === "A" ? "#64b5f6" : "#ef5350";
+  var nomeTime = jogo.time === "A" ? "TIME AZUL" : "TIME VERMELHO";
+  var totalPalavras = 0;
+  for(var i=0;i<PALAVRAS.length;i++){
+    if(PALAVRAS[i].turma === turmaRodada && PALAVRAS[i].disc === discRodada) totalPalavras++;
+  }
+  var restantes = totalPalavras - palavrasUsadasRodada.length;
+  if(restantes < 0) restantes = 0;
+
+  app.innerHTML = '<h1>🎓 JOGO DA FORCA - ' + jogo.turma.toUpperCase() + '</h1>' +
+    '<div class="tela"><div class="jogo">' +
+    '<div class="col"><div class="card forca">' + svgForca() + '</div></div>' +
+    '<div class="col">' +
+    '<div class="placar-times">' +
+    '<div class="time-placar a' + (jogo.time === "A" ? " ativo" : "") + '"><div class="nome">🔵 TIME AZUL</div><div class="pts">' + pontosA + '</div></div>' +
+    '<div class="time-placar b' + (jogo.time === "B" ? " ativo" : "") + '"><div class="nome">🔴 TIME VERMELHO</div><div class="pts">' + pontosB + '</div></div>' +
+    '</div>' +
+    '<div class="hud" style="background:linear-gradient(180deg,' + corTime + ',rgba(0,0,0,.4))">' +
+    '<span style="color:#fff">👤 <b>' + jogo.aluno + '</b> — ' + nomeTime + '</span>' +
+    '<span style="color:#fff">Vez ' + atual + ' de ' + total + '</span>' +
+    '</div>' +
+    '<div class="hud"><span>✔ Acertos <span class="v" id="acertos">' + jogo.acertos + '</span></span><span>✘ Erros <span class="v" id="erros">' + jogo.erros + '</span>/6</span></div>' +
+    '<div class="palavras-info">📚 Palavras nesta rodada: ' + palavrasUsadasRodada.length + '/' + totalPalavras + ' usadas • ' + restantes + ' restantes</div>' +
+    '<div class="dica"><div class="dica-t">💡 DICA</div><div class="dica-x" id="dicaTexto">' + jogo.dica + '</div></div>' +
+    '<div class="palavra"><div class="palavra-x" id="palavraSlots"></div></div>' +
+    '<div class="tec" id="teclado"></div>' +
+    '<div class="teclado-aviso">⌨️ Teclado físico funciona também</div>' +
+    '<div class="acoes-jogo">' +
+    '<button class="btn btn-laranja" onclick="confirmarEncerramento()">⏹️ ENCERRAR RODADA</button>' +
+    '<button class="btn btn-madeira" onclick="confirmarSair()">🏠 SAIR</button>' +
+    '</div>' +
+    '</div>' +
+    '</div></div>';
+  atualizarPalavra(true);
+  atualizarTeclado();
+}
+
+function svgForca(){
+  return '<svg viewBox="0 0 520 540" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">' +
+    '<defs>' +
+      '<linearGradient id="madeiraTop" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e8a668"/><stop offset="50%" stop-color="#c17a3b"/><stop offset="100%" stop-color="#5a2e0f"/></linearGradient>' +
+      '<linearGradient id="madeiraLado" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#d09050"/><stop offset="50%" stop-color="#a05e28"/><stop offset="100%" stop-color="#5a2e0f"/></linearGradient>' +
+      '<linearGradient id="madeiraBase" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#c98548"/><stop offset="50%" stop-color="#8a4a1e"/><stop offset="100%" stop-color="#4a2608"/></linearGradient>' +
+      '<linearGradient id="madeiraPoste" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#d09050"/><stop offset="25%" stop-color="#a05e28"/><stop offset="65%" stop-color="#8a4a1e"/><stop offset="100%" stop-color="#5a2e0f"/></linearGradient>' +
+      '<radialGradient id="peleCorpo" cx="35%" cy="25%" r="80%" fx="32%" fy="20%"><stop offset="0%" stop-color="#ffffff"/><stop offset="40%" stop-color="#f2f2f2"/><stop offset="75%" stop-color="#d8d8d8"/><stop offset="100%" stop-color="#888888"/></radialGradient>' +
+      '<radialGradient id="peleCabeca" cx="32%" cy="25%" r="75%"><stop offset="0%" stop-color="#ffffff"/><stop offset="45%" stop-color="#f5f5f5"/><stop offset="80%" stop-color="#d5d5d5"/><stop offset="100%" stop-color="#8a8a8a"/></radialGradient>' +
+      '<linearGradient id="peleMembro" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#b8b8b8"/><stop offset="35%" stop-color="#f0f0f0"/><stop offset="60%" stop-color="#ffffff"/><stop offset="85%" stop-color="#e0e0e0"/><stop offset="100%" stop-color="#a0a0a0"/></linearGradient>' +
+      '<pattern id="corda" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(25)"><rect width="6" height="6" fill="#d4a84c"/><line x1="0" y1="0" x2="0" y2="6" stroke="#8a6a20" stroke-width="2"/></pattern>' +
+      '<filter id="sombraSuave" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.5"/><feOffset dx="1" dy="3" result="off"/><feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>' +
+    '</defs>' +
+    '<ellipse cx="270" cy="500" rx="220" ry="15" fill="rgba(0,0,0,.5)"/>' +
+    '<rect x="90" y="458" width="360" height="36" rx="6" fill="url(#madeiraBase)" stroke="#3a1c04" stroke-width="3" filter="url(#sombraSuave)"/>' +
+    '<rect x="90" y="458" width="360" height="10" rx="3" fill="rgba(255,255,255,.3)"/>' +
+    '<line x1="160" y1="463" x2="160" y2="492" stroke="#3a1c04" stroke-width="2.5" opacity=".6"/>' +
+    '<line x1="230" y1="463" x2="230" y2="492" stroke="#3a1c04" stroke-width="2.5" opacity=".6"/>' +
+    '<line x1="300" y1="463" x2="300" y2="492" stroke="#3a1c04" stroke-width="2.5" opacity=".6"/>' +
+    '<line x1="370" y1="463" x2="370" y2="492" stroke="#3a1c04" stroke-width="2.5" opacity=".6"/>' +
+    '<g transform="translate(80,414)" filter="url(#sombraSuave)">' +
+      '<rect x="0" y="0" width="62" height="15" rx="3" fill="url(#madeiraTop)" stroke="#3a1c04" stroke-width="2.5"/>' +
+      '<rect x="0" y="0" width="62" height="4" rx="2" fill="rgba(255,255,255,.35)"/>' +
+      '<rect x="10" y="17" width="68" height="17" rx="3" fill="url(#madeiraLado)" stroke="#3a1c04" stroke-width="2.5"/>' +
+      '<rect x="10" y="17" width="68" height="4" rx="2" fill="rgba(255,255,255,.35)"/>' +
+    '</g>' +
+    '<rect x="180" y="55" width="32" height="407" rx="5" fill="url(#madeiraPoste)" stroke="#3a1c04" stroke-width="3" filter="url(#sombraSuave)"/>' +
+    '<path d="M 191 70 Q 188 200 192 320 Q 190 400 194 458" stroke="rgba(0,0,0,.28)" stroke-width="1.8" fill="none"/>' +
+    '<path d="M 203 65 Q 207 200 202 340 Q 204 410 199 458" stroke="rgba(255,255,255,.18)" stroke-width="1.2" fill="none"/>' +
+    '<rect x="180" y="55" width="32" height="7" rx="3" fill="rgba(255,255,255,.35)"/>' +
+    '<rect x="180" y="55" width="220" height="28" rx="5" fill="url(#madeiraTop)" stroke="#3a1c04" stroke-width="3" filter="url(#sombraSuave)"/>' +
+    '<rect x="180" y="55" width="220" height="10" rx="3" fill="rgba(255,255,255,.35)"/>' +
+    '<path d="M 190 78 Q 290 76 390 78" stroke="rgba(0,0,0,.15)" stroke-width="1" fill="none"/>' +
+    '<path d="M 200 95 L 248 62" stroke="#7a4218" stroke-width="15" stroke-linecap="round" filter="url(#sombraSuave)"/>' +
+    '<path d="M 200 95 L 248 62" stroke="#c17a3b" stroke-width="10" stroke-linecap="round"/>' +
+    '<circle cx="205" cy="91" r="3" fill="#3a1c04"/>' +
+    '<circle cx="243" cy="65" r="3" fill="#3a1c04"/>' +
+    '<circle cx="360" cy="83" r="11" fill="#3a3a3a" stroke="#1a1a1a" stroke-width="3"/>' +
+    '<circle cx="360" cy="83" r="4.5" fill="#0a0a0a"/>' +
+    '<circle cx="358" cy="81" r="1.5" fill="rgba(255,255,255,.7)"/>' +
+    '<line x1="360" y1="94" x2="360" y2="150" stroke="url(#corda)" stroke-width="10" stroke-linecap="round"/>' +
+    '<g id="parte-perna-esq" class="parte" style="opacity:0;transform:scale(0);transform-origin:center;transition:all .6s">' +
+      '<path d="M 342 348 Q 336 395 330 440" stroke="url(#peleMembro)" stroke-width="24" fill="none" stroke-linecap="round" filter="url(#sombraSuave)"/>' +
+      '<ellipse cx="328" cy="448" rx="20" ry="9" fill="url(#peleMembro)" stroke="#6e6e6e" stroke-width="1.5"/>' +
+      '<ellipse cx="328" cy="454" rx="18" ry="3" fill="rgba(0,0,0,.25)"/>' +
+    '</g>' +
+    '<g id="parte-perna-dir" class="parte" style="opacity:0;transform:scale(0);transform-origin:center;transition:all .6s">' +
+      '<path d="M 378 348 Q 384 395 390 440" stroke="url(#peleMembro)" stroke-width="24" fill="none" stroke-linecap="round" filter="url(#sombraSuave)"/>' +
+      '<ellipse cx="392" cy="448" rx="20" ry="9" fill="url(#peleMembro)" stroke="#6e6e6e" stroke-width="1.5"/>' +
+      '<ellipse cx="392" cy="454" rx="18" ry="3" fill="rgba(0,0,0,.25)"/>' +
+    '</g>' +
+    '<g id="parte-braco-esq" class="parte" style="opacity:0;transform:scale(0);transform-origin:center;transition:all .6s">' +
+      '<path d="M 334 265 Q 304 288 286 320" stroke="url(#peleMembro)" stroke-width="22" fill="none" stroke-linecap="round" filter="url(#sombraSuave)"/>' +
+      '<circle cx="280" cy="328" r="13" fill="url(#peleMembro)" stroke="#6e6e6e" stroke-width="1.5"/>' +
+      '<ellipse cx="275" cy="322" rx="6" ry="7" fill="rgba(255,255,255,.65)"/>' +
+    '</g>' +
+    '<g id="parte-braco-dir" class="parte" style="opacity:0;transform:scale(0);transform-origin:center;transition:all .6s">' +
+      '<path d="M 386 265 Q 416 288 434 320" stroke="url(#peleMembro)" stroke-width="22" fill="none" stroke-linecap="round" filter="url(#sombraSuave)"/>' +
+      '<circle cx="440" cy="328" r="13" fill="url(#peleMembro)" stroke="#6e6e6e" stroke-width="1.5"/>' +
+      '<ellipse cx="445" cy="322" rx="6" ry="7" fill="rgba(255,255,255,.65)"/>' +
+    '</g>' +
+    '<g id="parte-corpo" class="parte" style="opacity:0;transform:scale(0);transform-origin:center;transition:all .6s">' +
+      '<path d="M 324 245 Q 324 236 334 233 Q 360 227 386 233 Q 396 236 396 245 Q 400 280 396 320 Q 394 345 378 348 Q 360 352 342 348 Q 326 345 324 320 Q 320 280 324 245 Z" fill="url(#peleCorpo)" stroke="#6e6e6e" stroke-width="1.8" filter="url(#sombraSuave)"/>' +
+      '<path d="M 332 258 Q 330 300 334 335 Q 328 342 324 330 Q 320 295 326 258 Z" fill="rgba(255,255,255,.55)"/>' +
+      '<ellipse cx="344" cy="258" rx="14" ry="9" fill="rgba(255,255,255,.6)"/>' +
+    '</g>' +
+    '<g id="parte-cabeca" class="parte" style="opacity:0;transform:scale(0);transform-origin:center;transition:all .6s">' +
+      '<rect x="351" y="218" width="18" height="22" rx="7" fill="url(#peleMembro)" stroke="#6e6e6e" stroke-width="1.5"/>' +
+      '<ellipse cx="360" cy="185" rx="32" ry="45" fill="url(#peleCabeca)" stroke="#6e6e6e" stroke-width="1.8" filter="url(#sombraSuave)"/>' +
+      '<ellipse cx="347" cy="164" rx="16" ry="18" fill="rgba(255,255,255,.55)"/>' +
+      '<ellipse cx="342" cy="159" rx="7" ry="8" fill="rgba(255,255,255,.9)"/>' +
+      '<ellipse cx="339" cy="156" rx="3.5" ry="4" fill="#ffffff"/>' +
+      '<ellipse cx="347" cy="182" rx="4" ry="5" fill="#1a1a1a"/>' +
+      '<ellipse cx="373" cy="182" rx="4" ry="5" fill="#1a1a1a"/>' +
+      '<circle cx="348" cy="180.5" r="1.5" fill="#fff"/>' +
+      '<circle cx="374" cy="180.5" r="1.5" fill="#fff"/>' +
+      '<path d="M 339 173 Q 347 168 355 173" stroke="#1a1a1a" stroke-width="2.3" fill="none" stroke-linecap="round"/>' +
+      '<path d="M 365 173 Q 373 168 381 173" stroke="#1a1a1a" stroke-width="2.3" fill="none" stroke-linecap="round"/>' +
+      '<path d="M 353 202 Q 360 197 367 202" stroke="#1a1a1a" stroke-width="2.3" fill="none" stroke-linecap="round"/>' +
+    '</g>' +
+    '</svg>';
+}
+
+function atualizarPalavra(primeira){
+  var cont = $("palavraSlots");
+  if(!cont) return;
+  var novas = jogo.certas.filter(function(l){ return ultimasCertas.indexOf(l) === -1; });
+  ultimasCertas = jogo.certas.slice();
+  var html = "";
+  for(var i = 0; i < jogo.palavra.length; i++){
+    var l = jogo.palavra[i];
+    if(l === " "){ html += '<span style="display:inline-block;width:20px">&nbsp;</span>'; }
+    else if(jogo.certas.indexOf(semAcento(l)) !== -1){
+      var anim = !primeira && novas.indexOf(semAcento(l)) !== -1;
+      html += '<span class="ok"' + (anim ? ' style="animation:pop .5s ease"' : '') + '>' + l + '</span>';
+    } else {
+      html += '<span class="vaz">_</span>';
+    }
+  }
+  cont.innerHTML = html;
+}
+
+function atualizarTeclado(){
+  var t = $("teclado");
+  if(!t) return;
+  var h = "";
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(function(l){
+    var c = "t", d = "";
+    if(jogo.certas.indexOf(l) !== -1){ c += " c"; d = " disabled"; }
+    else if(jogo.erradas.indexOf(l) !== -1){ c += " e"; d = " disabled"; }
+    else if(jogo.finalizado){ d = " disabled"; }
+    h += '<button class="' + c + '" data-l="' + l + '"' + d + '>' + l + '</button>';
+  });
+  t.innerHTML = h;
+  var btns = t.querySelectorAll("button");
+  for(var i = 0; i < btns.length; i++){
+    btns[i].onclick = function(){ jogarLetra(this.getAttribute("data-l")); };
+  }
+}
+
+function jogarLetra(l){
+  if(jogo.finalizado) return;
+  if(jogo.certas.indexOf(l) !== -1 || jogo.erradas.indexOf(l) !== -1) return;
+  var acertou = false;
+  for(var i = 0; i < jogo.palavra.length; i++){
+    if(semAcento(l) === semAcento(jogo.palavra[i])){ acertou = true; break; }
+  }
+  if(acertou){
+    jogo.certas.push(l);
+    atualizarPalavra(false);
+  } else {
+    jogo.erradas.push(l);
+    jogo.erros++;
+    $("erros").textContent = jogo.erros;
+    var partes = ["cabeca","corpo","braco-esq","braco-dir","perna-esq","perna-dir"];
+    var el = document.getElementById("parte-" + partes[jogo.erros - 1]);
+    if(el){ el.style.opacity = "1"; el.style.transform = "scale(1)"; }
+    atualizarPalavra(true);
+  }
+  atualizarTeclado();
+  verificarFim();
+}
+
+function verificarFim(){
+  var s = jogo.palavra.replace(/\s/g,"");
+  var u = [];
+  for(var i = 0; i < s.length; i++){
+    var l = semAcento(s[i]);
+    if(u.indexOf(l) === -1) u.push(l);
+  }
+  var todas = true;
+  for(var j = 0; j < u.length; j++){
+    if(jogo.certas.indexOf(u[j]) === -1){ todas = false; break; }
+  }
+  if(todas){
+    jogo.finalizado = true;
+    jogo.acertos++;
+    if(jogo.time === "A") pontosA++;
+    else pontosB++;
+    $("acertos").textContent = jogo.acertos;
+    registrarJogada(true);
+    atualizarTeclado();
+    mostrarFimAluno(true);
+  } else if(jogo.erros >= 6){
+    jogo.finalizado = true;
+    jogo.certas = u.slice();
+    atualizarPalavra(true);
+    atualizarTeclado();
+    registrarJogada(false);
+    mostrarFimAluno(false);
+  }
+}
+
+function registrarJogada(acertou){
+  REGISTROS.push({
+    id: Date.now() + "_" + Math.random().toString(36).substr(2,5),
+    rodadaId: jogo.rodadaId,
+    aluno: jogo.aluno,
+    time: jogo.time,
+    turma: jogo.turma,
+    disc: jogo.disc,
+    palavra: jogo.palavra,
+    dica: jogo.dica,
+    acertou: acertou,
+    erros: jogo.erros,
+    data: new Date().toISOString()
+  });
+  salvarRegistros();
+}
+
+function mostrarFimAluno(v){
+  var ov = $("overlayFim");
+  var temProximo = indiceAlunoAtual < filaRodada.length - 1;
+  var proximo = temProximo ? filaRodada[indiceAlunoAtual + 1] : null;
+  var corTime = jogo.time === "A" ? "#64b5f6" : "#ef5350";
+  var nomeTime = jogo.time === "A" ? "TIME AZUL" : "TIME VERMELHO";
+
+  var html = '<div class="fim ' + (v ? 'v' : 'd') + '">' +
+    '<div style="background:' + corTime + ';display:inline-block;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:bold;letter-spacing:2px;margin-bottom:8px">' + nomeTime + '</div>' +
+    '<div class="emoji">' + (v ? '🎉' : '😢') + '</div>' +
+    '<h2>' + (v ? 'ACERTOU!' : 'ERROU!') + '</h2>' +
+    '<div class="sub">' + jogo.aluno + ' — ' + (v ? 'acertou a palavra:' : 'a palavra era:') + '</div>' +
+    '<div class="p">' + jogo.palavra + '</div>' +
+    '<div class="stats">Erros: ' + jogo.erros + '/6' + (v ? ' | +1 ponto para ' + nomeTime : '') + '</div>' +
+    '<div style="background:rgba(0,0,0,.3);padding:12px;border-radius:10px;margin-bottom:12px;font-weight:bold">' +
+    '🔵 Time Azul: ' + pontosA + ' &nbsp;&nbsp; | &nbsp;&nbsp; 🔴 Time Vermelho: ' + pontosB +
+    '</div>';
+
+  if(temProximo){
+    var corProx = proximo.time === "A" ? "#64b5f6" : "#ef5350";
+    var nomeTimeProx = proximo.time === "A" ? "TIME AZUL" : "TIME VERMELHO";
+    html += '<div style="background:' + corProx + ';padding:12px;border-radius:10px;margin-bottom:12px;font-weight:bold">' +
+      '👤 Próximo: <span style="color:#fff">' + proximo.nome + '</span> (' + nomeTimeProx + ')</div>' +
+      '<button class="btn btn-verde" onclick="proximoAluno()">➡️ CHAMAR PRÓXIMO</button>' +
+      '<button class="btn btn-laranja" onclick="confirmarEncerramento()">⏹️ ENCERRAR RODADA AGORA</button>';
+  } else {
+    html += '<div style="background:rgba(232,184,58,.3);padding:14px;border-radius:10px;margin-bottom:12px;font-weight:bold;font-size:16px">' +
+      '🏁 FIM DE RODADA!<br><br>' +
+      '🔵 Time Azul: <b>' + pontosA + '</b> ponto(s)<br>' +
+      '🔴 Time Vermelho: <b>' + pontosB + '</b> ponto(s)<br><br>' +
+      (pontosA > pontosB ? '🏆 VENCEDOR: TIME AZUL!' : (pontosB > pontosA ? '🏆 VENCEDOR: TIME VERMELHO!' : '🤝 EMPATE!')) +
+      '</div>' +
+      '<button class="btn btn-azul" onclick="telaRegistros()">📊 VER REGISTROS</button>' +
+      '<button class="btn btn-verde" onclick="telaMenu()">🏠 VOLTAR AO MENU</button>';
+  }
+
+  html += '</div>';
+  ov.innerHTML = html;
+  ov.classList.add("ativo");
+}
+
+function proximoAluno(){
+  indiceAlunoAtual++;
+  $("overlayFim").classList.remove("ativo");
+  iniciarPartidaAlunoAtual();
+}
+
+function confirmarEncerramento(){
+  $("overlayFim").classList.remove("ativo");
+  var jogadoresProcessados = indiceAlunoAtual + (jogo.palavra && !jogo.finalizado ? 1 : 0);
+  if(jogo.finalizado) jogadoresProcessados = indiceAlunoAtual + 1;
+  var restantes = filaRodada.length - jogadoresProcessados;
+  var emAndamento = jogo.palavra && !jogo.finalizado ? 1 : 0;
+
+  var html = '<div class="modal-box">' +
+    '<div class="icone">⏹️</div>' +
+    '<h2>ENCERRAR RODADA?</h2>' +
+    '<p>Os pontos conquistados até agora serão mantidos e salvos.</p>' +
+    '<div class="resumo">' +
+    '<b>📊 Situação atual:</b><br><br>' +
+    '🔵 Time Azul: <b>' + pontosA + '</b> ponto(s)<br>' +
+    '🔴 Time Vermelho: <b>' + pontosB + '</b> ponto(s)<br><br>' +
+    '👥 Alunos que jogaram: <b>' + jogadoresProcessados + ' de ' + filaRodada.length + '</b><br>' +
+    (restantes > 0 ? '⏱️ Ainda faltam <b>' + restantes + '</b> aluno(s) jogar' : '✅ Todos já jogaram') +
+    (emAndamento ? '<br><br>⚠️ A partida atual de <b>' + jogo.aluno + '</b> será salva como <b>interrompida</b>.' : '') +
+    '</div>' +
+    '<div class="modal-btns">' +
+    '<button class="btn btn-madeira" onclick="fecharModal()">⬅️ CONTINUAR JOGANDO</button>' +
+    '<button class="btn btn-vermelho" onclick="executarEncerramento()">⏹️ ENCERRAR AGORA</button>' +
+    '</div>' +
+    '</div>';
+  abrirModal(html);
+}
+
+function executarEncerramento(){
+  fecharModal();
+  if(jogo.palavra && !jogo.finalizado && jogo.aluno){
+    REGISTROS.push({
+      id: Date.now() + "_" + Math.random().toString(36).substr(2,5),
+      rodadaId: jogo.rodadaId,
+      aluno: jogo.aluno,
+      time: jogo.time,
+      turma: jogo.turma,
+      disc: jogo.disc,
+      palavra: jogo.palavra,
+      dica: jogo.dica,
+      acertou: false,
+      erros: jogo.erros,
+      interrompida: true,
+      data: new Date().toISOString()
+    });
+    salvarRegistros();
+  }
+  jogo.finalizado = true;
+  jogo.palavra = "";
+  mostrarResumoEncerramento();
+}
+
+function mostrarResumoEncerramento(){
+  var ov = $("overlayFim");
+  var jogadoresProcessados = indiceAlunoAtual + 1;
+  if(jogo.aluno && !jogo.palavra) jogadoresProcessados = indiceAlunoAtual + 1;
+  var restantes = filaRodada.length - jogadoresProcessados;
+  if(restantes < 0) restantes = 0;
+
+  var vencedor = "";
+  if(pontosA > pontosB) vencedor = "🏆 VENCEDOR: TIME AZUL!";
+  else if(pontosB > pontosA) vencedor = "🏆 VENCEDOR: TIME VERMELHO!";
+  else if(pontosA === 0 && pontosB === 0) vencedor = "🤝 Nenhum ponto ainda";
+  else vencedor = "🤝 EMPATE!";
+
+  var html = '<div class="fim aviso">' +
+    '<div class="emoji">⏹️</div>' +
+    '<h2>RODADA ENCERRADA</h2>' +
+    '<div class="sub">A rodada foi encerrada manualmente.</div>' +
+    '<div style="background:rgba(0,0,0,.35);padding:16px;border-radius:12px;margin:14px 0;font-weight:bold;font-size:16px;line-height:1.6">' +
+    '🔵 Time Azul: <b>' + pontosA + '</b> ponto(s)<br>' +
+    '🔴 Time Vermelho: <b>' + pontosB + '</b> ponto(s)<br><br>' +
+    '<span style="color:#ffe6c4">' + vencedor + '</span>' +
+    '</div>' +
+    '<div style="background:rgba(0,0,0,.25);padding:12px;border-radius:10px;margin-bottom:14px;font-size:13px;color:#fff">' +
+    '👥 Jogaram: <b>' + jogadoresProcessados + '</b> de ' + filaRodada.length + ' alunos' +
+    (restantes > 0 ? '<br>⏱️ Faltaram: <b>' + restantes + '</b> aluno(s)' : '<br>✅ Todos jogaram') +
+    '</div>' +
+    '<button class="btn btn-azul" onclick="telaRegistros()">📊 VER REGISTROS</button>' +
+    '<button class="btn btn-verde" onclick="telaMenu()">🏠 VOLTAR AO MENU</button>' +
+    '</div>';
+  ov.innerHTML = html;
+  ov.classList.add("ativo");
+}
+
+function confirmarSair(){
+  var html = '<div class="modal-box">' +
+    '<div class="icone">🏠</div>' +
+    '<h2>SAIR DO JOGO?</h2>' +
+    '<p>A partida atual <b>NÃO</b> será salva. Os pontos já computados das partidas finalizadas serão mantidos.</p>' +
+    '<div class="resumo">' +
+    '🔵 Time Azul: <b>' + pontosA + '</b> ponto(s)<br>' +
+    '🔴 Time Vermelho: <b>' + pontosB + '</b> ponto(s)' +
+    '</div>' +
+    '<div class="modal-btns">' +
+    '<button class="btn btn-madeira" onclick="fecharModal()">⬅️ CONTINUAR JOGANDO</button>' +
+    '<button class="btn btn-vermelho" onclick="executarSaida()">🏠 SAIR</button>' +
+    '</div>' +
+    '</div>';
+  abrirModal(html);
+}
+
+function executarSaida(){
+  fecharModal();
+  jogo.finalizado = true;
+  jogo.palavra = "";
+  telaMenu();
+}
+
+/* ============================================================
+   TELA DE REGISTROS COM EXPORTAÇÃO AVANÇADA
+   ============================================================ */
+function telaRegistros(){
+  jogo.palavra = "";
+  fecharModal();
+  $("overlayFim").classList.remove("ativo");
+  var turmas = getTurmas();
+  var optsTurma = '<option value="">Todas as turmas</option>';
+  for(var i=0;i<turmas.length;i++){
+    optsTurma += '<option value="' + turmas[i] + '">' + turmas[i] + '</option>';
+  }
+  var nomes = [];
+  for(var k=0;k<REGISTROS.length;k++){
+    if(nomes.indexOf(REGISTROS[k].aluno) === -1) nomes.push(REGISTROS[k].aluno);
+  }
+  nomes.sort();
+  var optsNome = '<option value="">Todos os alunos</option>';
+  for(var m=0;m<nomes.length;m++){
+    optsNome += '<option value="' + nomes[m] + '">' + nomes[m] + '</option>';
+  }
+
+  app.innerHTML = '<h1>📊 REGISTROS, NOTAS E EXPORTAÇÃO</h1>' +
+    '<div class="tela"><div class="menu"><div class="card reg-card">' +
+    '<div class="reg-filtros">' +
+    '<div><label>Data inicial</label><input type="date" id="filtroData"></div>' +
+    '<div><label>Data final</label><input type="date" id="filtroDataFim"></div>' +
+    '<div><label>Turma</label><select id="filtroTurma">' + optsTurma + '</select></div>' +
+    '<div><label>Aluno</label><select id="filtroNome">' + optsNome + '</select></div>' +
+    '</div>' +
+    '<div id="resumoReg" class="reg-resumo"></div>' +
+    '<div class="tabs" style="margin-top:14px">' +
+    '<div class="tab ' + (exportAba === "tabela" ? "ativa" : "") + '" onclick="mudarAbaExport(\'tabela\')">📋 Tabela</div>' +
+    '<div class="tab ' + (exportAba === "notas" ? "ativa" : "") + '" onclick="mudarAbaExport(\'notas\')">📝 Notas por Aluno</div>' +
+    '<div class="tab ' + (exportAba === "data" ? "ativa" : "") + '" onclick="mudarAbaExport(\'data\')">📅 Por Data</div>' +
+    '<div class="tab ' + (exportAba === "rodadas" ? "ativa" : "") + '" onclick="mudarAbaExport(\'rodadas\')">🎮 Por Rodada</div>' +
+    '</div>' +
+    '<div id="conteudoExport"></div>' +
+    '<div class="dupla" style="margin-top:14px">' +
+    '<button class="btn btn-azul" onclick="exportarCSVAtual()">📥 Exportar CSV (aba atual)</button>' +
+    '<button class="btn btn-verde" onclick="copiarAtual()">📋 Copiar p/ Excel</button>' +
+    '</div>' +
+    '<div class="dupla" style="margin-top:8px">' +
+    '<button class="btn btn-vermelho" onclick="limparRegistros()">🗑️ Limpar todos os registros</button>' +
+    '<button class="btn btn-madeira" onclick="telaMenu()">⬅️ Voltar ao Menu</button>' +
+    '</div>' +
+    '</div></div></div>';
+
+  $("filtroData").onchange = renderRegistros;
+  $("filtroDataFim").onchange = renderRegistros;
+  $("filtroTurma").onchange = renderRegistros;
+  $("filtroNome").onchange = renderRegistros;
+  renderRegistros();
+}
+
+function mudarAbaExport(aba){ exportAba = aba; telaRegistros(); }
+
+function filtrarRegistros(){
+  var data = $("filtroData") ? $("filtroData").value : "";
+  var dataFim = $("filtroDataFim") ? $("filtroDataFim").value : "";
+  var turma = $("filtroTurma") ? $("filtroTurma").value : "";
+  var nome = $("filtroNome") ? $("filtroNome").value : "";
+  var out = [];
+  for(var i=0;i<REGISTROS.length;i++){
+    var r = REGISTROS[i];
+    var d = dataParaInput(r.data);
+    if(data && d < data) continue;
+    if(dataFim && d > dataFim) continue;
+    if(turma && r.turma !== turma) continue;
+    if(nome && r.aluno !== nome) continue;
+    out.push(r);
+  }
+  out.sort(function(a,b){ return b.data.localeCompare(a.data); });
+  return out;
+}
+
+function renderResumo(lista){
+  var acertos = 0, interrompidas = 0;
+  for(var i=0;i<lista.length;i++){
+    if(lista[i].interrompida) interrompidas++;
+    else if(lista[i].acertou) acertos++;
+  }
+  var total = lista.length;
+  var erros = total - acertos - interrompidas;
+  var validas = total - interrompidas;
+  var aprov = validas > 0 ? Math.round(acertos/validas*100) : 0;
+
+  $("resumoReg").innerHTML =
+    '<div class="reg-stat"><div class="num">' + total + '</div><div class="lbl">PARTIDAS</div></div>' +
+    '<div class="reg-stat"><div class="num" style="color:#1b5e20">' + acertos + '</div><div class="lbl">ACERTOS</div></div>' +
+    '<div class="reg-stat"><div class="num" style="color:#7f0000">' + erros + '</div><div class="lbl">ERROS</div></div>' +
+    '<div class="reg-stat"><div class="num" style="color:#0d47a1">' + aprov + '%</div><div class="lbl">APROVEIT.</div></div>';
+}
+
+function renderRegistros(){
+  var lista = filtrarRegistros();
+  renderResumo(lista);
+  var el = $("conteudoExport");
+  if(!el) return;
+  if(exportAba === "tabela") el.innerHTML = montarTabelaCompleta(lista);
+  else if(exportAba === "notas") el.innerHTML = montarNotasPorAluno(lista);
+  else if(exportAba === "data") el.innerHTML = montarPorData(lista);
+  else if(exportAba === "rodadas") el.innerHTML = montarPorRodada(lista);
+}
+
+/* ===== ABA 1: TABELA COMPLETA ===== */
+function montarTabelaCompleta(lista){
+  var html = '<div style="color:#ffe6c4;font-size:13px;margin-bottom:8px;text-align:center;font-weight:bold">' +
+    '💡 Clique em qualquer linha para ver os detalhes da rodada' +
+    '</div>' +
+    '<div class="reg-tabela"><table><thead><tr>' +
+    '<th>Data/Hora</th><th>Aluno</th><th>Time</th><th>Turma</th><th>Palavra</th><th>Resultado</th><th>Erros</th><th></th>' +
+    '</tr></thead><tbody>';
+  if(lista.length === 0){
+    html += '<tr><td colspan="8" style="text-align:center;padding:20px;color:#7a4218;font-style:italic">Nenhum registro encontrado</td></tr>';
+  } else {
+    for(var i=0;i<lista.length;i++){
+      var r = lista[i];
+      var timeTxt = r.time === "A" ? "🔵 Azul" : (r.time === "B" ? "🔴 Vermelho" : "-");
+      var timeCls = r.time === "A" ? "time-a" : (r.time === "B" ? "time-b" : "");
+      var resultado = r.interrompida ? "⏸️ Interrompida" : (r.acertou ? "✔ Acertou" : "✘ Errou");
+      var resultadoCls = r.interrompida ? "" : (r.acertou ? "acerto" : "erro");
+      html += '<tr onclick="verDetalheRodada(\'' + (r.rodadaId || r.id) + '\')">' +
+        '<td>' + formatarData(r.data) + '</td>' +
+        '<td><b>' + r.aluno + '</b></td>' +
+        '<td class="' + timeCls + '">' + timeTxt + '</td>' +
+        '<td>' + r.turma + '</td>' +
+        '<td><b>' + r.palavra + '</b></td>' +
+        '<td class="' + resultadoCls + '">' + resultado + '</td>' +
+        '<td>' + r.erros + '/6</td>' +
+        '<td class="ver-mais">👁️ Ver</td>' +
+        '</tr>';
+    }
+  }
+  html += '</tbody></table></div>';
+  return html;
+}
+
+/* ===== ABA 2: NOTAS POR ALUNO ===== */
+function montarNotasPorAluno(lista){
+  var porAluno = {};
+  for(var i=0;i<lista.length;i++){
+    var r = lista[i];
+    if(!porAluno[r.aluno]){
+      porAluno[r.aluno] = {nome: r.aluno, turma: r.turma, total: 0, acertos: 0, erros: 0, interrompidas: 0, errosLetras: 0};
+    }
+    var a = porAluno[r.aluno];
+    a.total++;
+    if(r.interrompida) a.interrompidas++;
+    else if(r.acertou) a.acertos++;
+    else a.erros++;
+    a.errosLetras += r.erros;
+  }
+  var arr = [];
+  for(var k in porAluno) arr.push(porAluno[k]);
+  arr.sort(function(a,b){ return a.nome.localeCompare(b.nome); });
+
+  if(arr.length === 0){
+    return '<div style="color:#ffe6c4;text-align:center;padding:20px;font-style:italic">Nenhum aluno nos filtros selecionados</div>';
+  }
+
+  var html = '<div style="color:#ffe6c4;font-size:13px;margin-bottom:8px;text-align:center;font-weight:bold">' +
+    '💡 Resumo por aluno — pronto para lançamento de notas' +
+    '</div>' +
+    '<div class="reg-tabela"><table><thead><tr>' +
+    '<th>Aluno</th><th>Turma</th><th>Partidas</th><th>Acertos</th><th>Erros</th><th>Aproveit.</th><th>Erros em Letras</th><th>Sugestão</th>' +
+    '</tr></thead><tbody>';
+  for(var j=0;j<arr.length;j++){
+    var a = arr[j];
+    var validas = a.acertos + a.erros;
+    var aprov = validas > 0 ? Math.round(a.acertos/validas*100) : 0;
+    var notaCls = "", notaTxt = "";
+    if(validas === 0){ notaCls = "nota-regular"; notaTxt = "—"; }
+    else if(aprov >= 90){ notaCls = "nota-otima"; notaTxt = "Excelente"; }
+    else if(aprov >= 70){ notaCls = "nota-boa"; notaTxt = "Bom"; }
+    else if(aprov >= 50){ notaCls = "nota-regular"; notaTxt = "Regular"; }
+    else { notaCls = "nota-baixa"; notaTxt = "Atenção"; }
+
+    html += '<tr style="cursor:default">' +
+      '<td><b>' + a.nome + '</b></td>' +
+      '<td>' + a.turma + '</td>' +
+      '<td>' + a.total + (a.interrompidas > 0 ? ' <span style="color:#8b5e0a;font-size:11px">(' + a.interrompidas + ' int.)</span>' : '') + '</td>' +
+      '<td style="color:#1b5e20;font-weight:bold">' + a.acertos + '</td>' +
+      '<td style="color:#7f0000;font-weight:bold">' + a.erros + '</td>' +
+      '<td><b>' + aprov + '%</b></td>' +
+      '<td>' + a.errosLetras + '</td>' +
+      '<td><span class="nota-badge ' + notaCls + '">' + notaTxt + '</span></td>' +
+      '</tr>';
+  }
+  html += '</tbody></table></div>';
+  return html;
+}
+
+/* ===== ABA 3: POR DATA ===== */
+function montarPorData(lista){
+  var porData = {};
+  for(var i=0;i<lista.length;i++){
+    var r = lista[i];
+    var dia = dataParaInput(r.data);
+    if(!porData[dia]){
+      porData[dia] = {dia: dia, total: 0, acertos: 0, erros: 0, alunos: [], turmas: []};
+    }
+    var d = porData[dia];
+    d.total++;
+    if(!r.interrompida){
+      if(r.acertou) d.acertos++;
+      else d.erros++;
+    }
+    if(d.alunos.indexOf(r.aluno) === -1) d.alunos.push(r.aluno);
+    if(d.turmas.indexOf(r.turma) === -1) d.turmas.push(r.turma);
+  }
+  var arr = [];
+  for(var k in porData) arr.push(porData[k]);
+  arr.sort(function(a,b){ return b.dia.localeCompare(a.dia); });
+
+  if(arr.length === 0){
+    return '<div style="color:#ffe6c4;text-align:center;padding:20px;font-style:italic">Nenhum registro encontrado</div>';
+  }
+
+  var html = '<div style="color:#ffe6c4;font-size:13px;margin-bottom:8px;text-align:center;font-weight:bold">' +
+    '💡 Resumo por data — clique para ver todos os registros daquele dia' +
+    '</div>' +
+    '<div class="reg-tabela"><table><thead><tr>' +
+    '<th>Data</th><th>Total</th><th>Acertos</th><th>Erros</th><th>Aproveit.</th><th>Alunos</th><th>Turmas</th><th></th>' +
+    '</tr></thead><tbody>';
+  for(var j=0;j<arr.length;j++){
+    var d = arr[j];
+    var validas = d.acertos + d.erros;
+    var aprov = validas > 0 ? Math.round(d.acertos/validas*100) : 0;
+    var [ano, mes, dia] = d.dia.split("-");
+    var dataBr = dia + "/" + mes + "/" + ano;
+    html += '<tr onclick="verRegistrosDaData(\'' + d.dia + '\')">' +
+      '<td><b>' + dataBr + '</b></td>' +
+      '<td>' + d.total + '</td>' +
+      '<td style="color:#1b5e20;font-weight:bold">' + d.acertos + '</td>' +
+      '<td style="color:#7f0000;font-weight:bold">' + d.erros + '</td>' +
+      '<td><b>' + aprov + '%</b></td>' +
+      '<td>' + d.alunos.length + '</td>' +
+      '<td>' + d.turmas.join(", ") + '</td>' +
+      '<td class="ver-mais">👁️ Ver</td>' +
+      '</tr>';
+  }
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function verRegistrosDaData(dia){
+  var regs = [];
+  for(var i=0;i<REGISTROS.length;i++){
+    if(dataParaInput(REGISTROS[i].data) === dia) regs.push(REGISTROS[i]);
+  }
+  if(regs.length === 0){ alert("Nenhum registro nesta data."); return; }
+  regs.sort(function(a,b){ return a.data.localeCompare(b.data); });
+
+  var [ano, mes, d] = dia.split("-");
+  var dataBr = d + "/" + mes + "/" + ano;
+
+  var html = '<div class="modal-box detalhe-box">' +
+    '<div class="icone">📅</div>' +
+    '<h2>REGISTROS DE ' + dataBr + '</h2>' +
+    '<div class="reg-tabela" style="max-height:400px;margin-bottom:14px"><table><thead><tr>' +
+    '<th>Hora</th><th>Aluno</th><th>Time</th><th>Turma</th><th>Palavra</th><th>Resultado</th>' +
+    '</tr></thead><tbody>';
+  for(var j=0;j<regs.length;j++){
+    var r = regs[j];
+    var hora = formatarData(r.data).split(" ")[1];
+    var timeTxt = r.time === "A" ? "🔵 Azul" : "🔴 Verm.";
+    var resultado = r.interrompida ? "⏸️ Inter." : (r.acertou ? "✔ Acertou" : "✘ Errou");
+    var resultadoCls = r.interrompida ? "" : (r.acertou ? "acerto" : "erro");
+    html += '<tr>' +
+      '<td>' + hora + '</td>' +
+      '<td><b>' + r.aluno + '</b></td>' +
+      '<td>' + timeTxt + '</td>' +
+      '<td>' + r.turma + '</td>' +
+      '<td><b>' + r.palavra + '</b></td>' +
+      '<td class="' + resultadoCls + '">' + resultado + '</td>' +
+      '</tr>';
+  }
+  html += '</tbody></table></div>' +
+    '<button class="btn btn-madeira" onclick="fecharModal()">⬅️ FECHAR</button>' +
+    '</div>';
+  abrirModal(html);
+}
+
+/* ===== ABA 4: POR RODADA ===== */
+function montarPorRodada(lista){
+  var rodadas = agruparPorRodada(lista);
+  if(rodadas.length === 0){
+    return '<div style="color:#ffe6c4;text-align:center;padding:20px;font-style:italic">Nenhuma rodada encontrada</div>';
+  }
+  var html = '<div style="color:#ffe6c4;font-size:13px;margin-bottom:8px;text-align:center;font-weight:bold">' +
+    '💡 Clique em qualquer rodada para ver os detalhes completos' +
+    '</div>' +
+    '<div class="reg-tabela"><table><thead><tr>' +
+    '<th>Data/Hora</th><th>Turma</th><th>Partidas</th><th>🔵 Azul</th><th>🔴 Vermelho</th><th>Vencedor</th><th></th>' +
+    '</tr></thead><tbody>';
+  for(var i=0;i<rodadas.length;i++){
+    var rod = rodadas[i];
+    var vencedor = "";
+    if(rod.pontosA > rod.pontosB) vencedor = "🏆 Azul";
+    else if(rod.pontosB > rod.pontosA) vencedor = "🏆 Vermelho";
+    else if(rod.pontosA === 0 && rod.pontosB === 0) vencedor = "—";
+    else vencedor = "🤝 Empate";
+    html += '<tr onclick="verDetalheRodada(\'' + rod.rodadaId + '\')">' +
+      '<td>' + formatarData(rod.data) + '</td>' +
+      '<td>' + rod.turma + '</td>' +
+      '<td>' + rod.registros.length + '</td>' +
+      '<td style="color:#0d47a1;font-weight:bold">' + rod.pontosA + '</td>' +
+      '<td style="color:#b71c1c;font-weight:bold">' + rod.pontosB + '</td>' +
+      '<td>' + vencedor + '</td>' +
+      '<td class="ver-mais">👁️ Ver</td>' +
+      '</tr>';
+  }
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function agruparPorRodada(registros){
+  var grupos = {};
+  for(var i=0;i<registros.length;i++){
+    var r = registros[i];
+    var chave = r.rodadaId || r.id;
+    if(!grupos[chave]){
+      grupos[chave] = {
+        rodadaId: chave, data: r.data, turma: r.turma, disc: r.disc,
+        registros: [], timeA: [], timeB: [], pontosA: 0, pontosB: 0
+      };
+    }
+    grupos[chave].registros.push(r);
+    if(r.time === "A") grupos[chave].timeA.push(r);
+    else if(r.time === "B") grupos[chave].timeB.push(r);
+    if(r.acertou && !r.interrompida){
+      if(r.time === "A") grupos[chave].pontosA++;
+      else grupos[chave].pontosB++;
+    }
+    if(r.data > grupos[chave].data) grupos[chave].data = r.data;
+  }
+  var arr = [];
+  for(var k in grupos) arr.push(grupos[k]);
+  arr.sort(function(a,b){ return b.data.localeCompare(a.data); });
+  return arr;
+}
+
+function verDetalheRodada(rodadaId){
+  var regs = [];
+  for(var i=0;i<REGISTROS.length;i++){
+    var chave = REGISTROS[i].rodadaId || REGISTROS[i].id;
+    if(chave === rodadaId) regs.push(REGISTROS[i]);
+  }
+  if(regs.length === 0){ alert("Rodada não encontrada."); return; }
+  regs.sort(function(a,b){ return a.data.localeCompare(b.data); });
+
+  var turma = regs[0].turma;
+  var disc = regs[0].disc;
+  var dataInicio = regs[0].data;
+  var dataFim = regs[regs.length-1].data;
+
+  var timeARegs = [];
+  var timeBRegs = [];
+  var pontosA = 0, pontosB = 0;
+  for(var j=0;j<regs.length;j++){
+    if(regs[j].time === "A"){
+      timeARegs.push(regs[j]);
+      if(regs[j].acertou && !regs[j].interrompida) pontosA++;
+    } else if(regs[j].time === "B"){
+      timeBRegs.push(regs[j]);
+      if(regs[j].acertou && !regs[j].interrompida) pontosB++;
+    }
+  }
+
+  var html = '<div class="modal-box detalhe-box">' +
+    '<div class="icone">🎮</div>' +
+    '<h2>DETALHES DA RODADA</h2>' +
+    '<div class="detalhe-header">' +
+    '🏫 <b>Turma:</b> ' + turma + ' &nbsp;&nbsp;|&nbsp;&nbsp; 📚 <b>Disciplina:</b> ' + disc + '<br>' +
+    '📅 <b>Início:</b> ' + formatarData(dataInicio) + '<br>' +
+    '📅 <b>Fim:</b> ' + formatarData(dataFim) + '<br>' +
+    '👥 <b>Total de partidas:</b> ' + regs.length +
+    '</div>' +
+    '<div class="detalhe-times">' +
+    '<div class="detalhe-time a">' +
+    '<h3>🔵 TIME AZUL</h3>' +
+    '<div class="pontos">' + pontosA + ' ponto(s)</div>';
+  if(timeARegs.length === 0){
+    html += '<div style="text-align:center;font-size:12px;opacity:.7;padding:10px">Nenhum registro</div>';
+  } else {
+    for(var a=0;a<timeARegs.length;a++){
+      var r = timeARegs[a];
+      var resTxt = r.interrompida ? "⏸️ Interrompida" : (r.acertou ? "✔ " + r.erros + " erro(s)" : "✘ " + r.erros + " erro(s)");
+      var resCls = r.interrompida ? "int" : (r.acertou ? "ok" : "no");
+      html += '<div class="aluno-det">' +
+        '<span class="nome">' + r.aluno + '</span>' +
+        '<span class="res ' + resCls + '">' + resTxt + '</span>' +
+        '</div>';
+    }
+  }
+  html += '</div>' +
+    '<div class="detalhe-time b">' +
+    '<h3>🔴 TIME VERMELHO</h3>' +
+    '<div class="pontos">' + pontosB + ' ponto(s)</div>';
+  if(timeBRegs.length === 0){
+    html += '<div style="text-align:center;font-size:12px;opacity:.7;padding:10px">Nenhum registro</div>';
+  } else {
+    for(var b=0;b<timeBRegs.length;b++){
+      var r = timeBRegs[b];
+      var resTxt = r.interrompida ? "⏸️ Interrompida" : (r.acertou ? "✔ " + r.erros + " erro(s)" : "✘ " + r.erros + " erro(s)");
+      var resCls = r.interrompida ? "int" : (r.acertou ? "ok" : "no");
+      html += '<div class="aluno-det">' +
+        '<span class="nome">' + r.aluno + '</span>' +
+        '<span class="res ' + resCls + '">' + resTxt + '</span>' +
+        '</div>';
+    }
+  }
+  html += '</div>' +
+    '</div>';
+
+  var vencedorTxt = "";
+  if(pontosA > pontosB) vencedorTxt = "🏆 VENCEDOR: TIME AZUL!";
+  else if(pontosB > pontosA) vencedorTxt = "🏆 VENCEDOR: TIME VERMELHO!";
+  else if(pontosA === 0 && pontosB === 0) vencedorTxt = "🤝 Nenhum ponto";
+  else vencedorTxt = "🤝 EMPATE!";
+  html += '<div style="background:rgba(232,184,58,.3);padding:14px;border-radius:12px;margin-bottom:14px;font-weight:bold;font-size:16px">' +
+    vencedorTxt +
+    '</div>' +
+    '<button class="btn btn-madeira" onclick="fecharModal()">⬅️ FECHAR</button>' +
+    '</div>';
+
+  abrirModal(html);
+}
+
+/* ============================================================
+   EXPORTAÇÃO AVANÇADA
+   ============================================================ */
+function gerarCSVCompleto(lista){
+  var csv = "Data/Hora;Aluno;Time;Turma;Disciplina;Palavra;Resultado;Erros\n";
+  for(var i=0;i<lista.length;i++){
+    var r = lista[i];
+    var timeTxt = r.time === "A" ? "Azul" : (r.time === "B" ? "Vermelho" : "");
+    var resultado = r.interrompida ? "Interrompida" : (r.acertou ? "Acertou" : "Errou");
+    csv += '"' + formatarData(r.data) + '";' +
+      '"' + r.aluno.replace(/"/g,'""') + '";' +
+      '"' + timeTxt + '";' +
+      '"' + r.turma + '";' +
+      '"' + r.disc + '";' +
+      '"' + r.palavra + '";' +
+      '"' + resultado + '";' +
+      r.erros + '\n';
+  }
+  return csv;
+}
+
+function gerarCSVNotas(lista){
+  var porAluno = {};
+  for(var i=0;i<lista.length;i++){
+    var r = lista[i];
+    if(!porAluno[r.aluno]){
+      porAluno[r.aluno] = {nome: r.aluno, turma: r.turma, total: 0, acertos: 0, erros: 0, interrompidas: 0, errosLetras: 0};
+    }
+    var a = porAluno[r.aluno];
+    a.total++;
+    if(r.interrompida) a.interrompidas++;
+    else if(r.acertou) a.acertos++;
+    else a.erros++;
+    a.errosLetras += r.erros;
+  }
+  var arr = [];
+  for(var k in porAluno) arr.push(porAluno[k]);
+  arr.sort(function(a,b){ return a.nome.localeCompare(b.nome); });
+
+  var csv = "Aluno;Turma;Partidas;Acertos;Erros;Interrompidas;Aproveitamento(%);Erros em Letras;Desempenho\n";
+  for(var j=0;j<arr.length;j++){
+    var a = arr[j];
+    var validas = a.acertos + a.erros;
+    var aprov = validas > 0 ? Math.round(a.acertos/validas*100) : 0;
+    var nota = "";
+    if(validas === 0) nota = "—";
+    else if(aprov >= 90) nota = "Excelente";
+    else if(aprov >= 70) nota = "Bom";
+    else if(aprov >= 50) nota = "Regular";
+    else nota = "Atenção";
+
+    csv += '"' + a.nome.replace(/"/g,'""') + '";' +
+      '"' + a.turma + '";' +
+      a.total + ";" +
+      a.acertos + ";" +
+      a.erros + ";" +
+      a.interrompidas + ";" +
+      aprov + ";" +
+      a.errosLetras + ";" +
+      '"' + nota + '"\n';
+  }
+  return csv;
+}
+
+function gerarCSVPorData(lista){
+  var porData = {};
+  for(var i=0;i<lista.length;i++){
+    var r = lista[i];
+    var dia = dataParaInput(r.data);
+    if(!porData[dia]){
+      porData[dia] = {dia: dia, total: 0, acertos: 0, erros: 0, alunos: [], turmas: []};
+    }
+    var d = porData[dia];
+    d.total++;
+    if(!r.interrompida){
+      if(r.acertou) d.acertos++;
+      else d.erros++;
+    }
+    if(d.alunos.indexOf(r.aluno) === -1) d.alunos.push(r.aluno);
+    if(d.turmas.indexOf(r.turma) === -1) d.turmas.push(r.turma);
+  }
+  var arr = [];
+  for(var k in porData) arr.push(porData[k]);
+  arr.sort(function(a,b){ return b.dia.localeCompare(a.dia); });
+
+  var csv = "Data;Total de Partidas;Acertos;Erros;Aproveitamento(%);Alunos;Turmas\n";
+  for(var j=0;j<arr.length;j++){
+    var d = arr[j];
+    var validas = d.acertos + d.erros;
+    var aprov = validas > 0 ? Math.round(d.acertos/validas*100) : 0;
+    var [ano, mes, dia] = d.dia.split("-");
+    var dataBr = dia + "/" + mes + "/" + ano;
+    csv += '"' + dataBr + '";' +
+      d.total + ";" +
+      d.acertos + ";" +
+      d.erros + ";" +
+      aprov + ";" +
+      '"' + d.alunos.join(", ") + '";' +
+      '"' + d.turmas.join(", ") + '"\n';
+  }
+  return csv;
+}
+
+function gerarCSVPorRodada(lista){
+  var rodadas = agruparPorRodada(lista);
+  var csv = "Rodada;Data/Hora;Turma;Disciplina;Partidas;Pontos Azul;Pontos Vermelho;Vencedor;Alunos Azul;Alunos Vermelho\n";
+  for(var i=0;i<rodadas.length;i++){
+    var rod = rodadas[i];
+    var vencedor = "";
+    if(rod.pontosA > rod.pontosB) vencedor = "Azul";
+    else if(rod.pontosB > rod.pontosA) vencedor = "Vermelho";
+    else if(rod.pontosA === 0 && rod.pontosB === 0) vencedor = "—";
+    else vencedor = "Empate";
+
+    var azul = [];
+    for(var a=0;a<rod.timeA.length;a++) azul.push(rod.timeA[a].aluno);
+    var verm = [];
+    for(var b=0;b<rod.timeB.length;b++) verm.push(rod.timeB[b].aluno);
+
+    csv += '"' + rod.rodadaId + '";' +
+      '"' + formatarData(rod.data) + '";' +
+      '"' + rod.turma + '";' +
+      '"' + rod.disc + '";' +
+      rod.registros.length + ";" +
+      rod.pontosA + ";" +
+      rod.pontosB + ";" +
+      '"' + vencedor + '";' +
+      '"' + azul.join(", ") + '";' +
+      '"' + verm.join(", ") + '"\n';
+  }
+  return csv;
+}
+
+function exportarCSVAtual(){
+  var lista = filtrarRegistros();
+  if(lista.length === 0){ alert("Nenhum registro para exportar!"); return; }
+  var csv = "";
+  var nome = "";
+  var hoje = new Date().toISOString().slice(0,10);
+
+  if(exportAba === "tabela"){
+    csv = gerarCSVCompleto(lista);
+    nome = "registros_completos_" + hoje + ".csv";
+  } else if(exportAba === "notas"){
+    csv = gerarCSVNotas(lista);
+    nome = "notas_por_aluno_" + hoje + ".csv";
+  } else if(exportAba === "data"){
+    csv = gerarCSVPorData(lista);
+    nome = "resumo_por_data_" + hoje + ".csv";
+  } else if(exportAba === "rodadas"){
+    csv = gerarCSVPorRodada(lista);
+    nome = "resumo_por_rodada_" + hoje + ".csv";
+  }
+  baixarArquivo(nome, csv);
+}
+
+function copiarAtual(){
+  var lista = filtrarRegistros();
+  if(lista.length === 0){ alert("Nenhum registro para copiar!"); return; }
+  var csv = "";
+  if(exportAba === "tabela") csv = gerarCSVCompleto(lista);
+  else if(exportAba === "notas") csv = gerarCSVNotas(lista);
+  else if(exportAba === "data") csv = gerarCSVPorData(lista);
+  else if(exportAba === "rodadas") csv = gerarCSVPorRodada(lista);
+  copiarParaClipboard(csv.replace(/;/g, "\t"));
+}
+
+function limparRegistros(){
+  var html = '<div class="modal-box">' +
+    '<div class="icone">🗑️</div>' +
+    '<h2>APAGAR TODOS OS REGISTROS?</h2>' +
+    '<p><b>ATENÇÃO:</b> essa ação não pode ser desfeita. Todos os registros de todos os alunos serão apagados permanentemente.</p>' +
+    '<div class="resumo">' +
+    '📊 Total de registros: <b>' + REGISTROS.length + '</b>' +
+    '</div>' +
+    '<div class="modal-btns">' +
+    '<button class="btn btn-madeira" onclick="fecharModal()">⬅️ CANCELAR</button>' +
+    '<button class="btn btn-vermelho" onclick="executarLimpeza()">🗑️ APAGAR TUDO</button>' +
+    '</div>' +
+    '</div>';
+  abrirModal(html);
+}
+
+function executarLimpeza(){
+  fecharModal();
+  REGISTROS = [];
+  salvarRegistros();
+  renderRegistros();
+}
+
+function telaProfessor(){
+  jogo.palavra = "";
+  fecharModal();
+  $("overlayFim").classList.remove("ativo");
+  app.innerHTML = '<h1>👨‍🏫 ÁREA DO PROFESSOR</h1>' +
+    '<div class="tela"><div class="menu"><div class="card menu-card" style="max-width:640px">' +
+    '<div class="tabs">' +
+    '<div class="tab ' + (telaProfAba === "add" ? "ativa" : "") + '" onclick="mudarAbaProf(\'add\')">➕ Adicionar</div>' +
+    '<div class="tab ' + (telaProfAba === "lista" ? "ativa" : "") + '" onclick="mudarAbaProf(\'lista\')">📋 Lista</div>' +
+    '</div>' +
+    '<div id="conteudoProf"></div>' +
+    '<button class="btn btn-madeira" onclick="telaMenu()" style="margin-top:16px">⬅️ VOLTAR AO MENU</button>' +
+    '</div></div></div>';
+  renderConteudoProf();
+}
+
+function mudarAbaProf(aba){ telaProfAba = aba; telaProfessor(); }
+
+function renderConteudoProf(){
+  var el = $("conteudoProf");
+  if(telaProfAba === "add"){
+    var turmas = getTurmas();
+    var optsTurma = "";
+    for(var i=0;i<turmas.length;i++){
+      optsTurma += '<option value="' + turmas[i] + '">' + turmas[i] + '</option>';
+    }
+    el.innerHTML = '<label>Turma</label>' +
+      '<input type="text" id="inputTurma" placeholder="Ex: 4º Ano" value="' + (turmas[0] || "") + '" list="listaTurmas">' +
+      '<datalist id="listaTurmas">' + optsTurma + '</datalist>' +
+      '<label>Disciplina</label>' +
+      '<input type="text" id="inputDisc" placeholder="Ex: Química" value="Química">' +
+      '<label>Palavra (pode ter acento)</label>' +
+      '<input type="text" id="inputPalavra" placeholder="Ex: MOLÉCULA">' +
+      '<label>Dica</label>' +
+      '<textarea id="inputDica" placeholder="Digite a dica aqui..."></textarea>' +
+      '<button class="btn btn-verde" onclick="adicionarPalavra()">➕ ADICIONAR PALAVRA</button>' +
+      '<button class="btn btn-azul" onclick="restaurarPadrao()" style="margin-top:8px">🔄 Restaurar palavras padrão</button>';
+  } else {
+    var html = '<div class="lista">';
+    for(var i=0;i<PALAVRAS.length;i++){
+      html += '<div class="item"><div><b>[' + PALAVRAS[i].turma + ']</b> ' + PALAVRAS[i].p + ' — <span style="opacity:.8">' + PALAVRAS[i].d.substring(0,50) + (PALAVRAS[i].d.length > 50 ? "..." : "") + '</span></div>' +
+        '<button class="del" onclick="removerPalavra(' + i + ')">🗑️</button></div>';
+    }
+    if(PALAVRAS.length === 0) html += '<p style="text-align:center;padding:20px">Nenhuma palavra cadastrada.</p>';
+    html += '</div>';
+    el.innerHTML = html;
+  }
+}
+
+function adicionarPalavra(){
+  var turma = $("inputTurma").value.trim();
+  var disc = $("inputDisc").value.trim();
+  var palavra = $("inputPalavra").value.trim().toUpperCase();
+  var dica = $("inputDica").value.trim();
+  if(!turma || !disc || !palavra || !dica){
+    alert("Preencha todos os campos!");
+    return;
+  }
+  PALAVRAS.push({turma:turma, disc:disc, p:palavra, d:dica});
+  salvarPalavras();
+  alert("✅ Palavra adicionada!");
+  telaProfessor();
+}
+
+function removerPalavra(i){
+  if(!confirm("Remover esta palavra?")) return;
+  PALAVRAS.splice(i, 1);
+  salvarPalavras();
+  telaProfessor();
+}
+
+function restaurarPadrao(){
+  if(!confirm("Isso vai APAGAR todas as palavras customizadas e restaurar as padrão. Continuar?")) return;
+  PALAVRAS = PALAVRAS_PADRAO.slice();
+  salvarPalavras();
+  alert("🔄 Palavras restauradas!");
+  telaProfessor();
+}
+
+carregarPalavras();
+carregarRegistros();
+telaMenu();
+window.telaMenu = telaMenu;
+window.telaRegistros = telaRegistros;
+window.telaRegistrarAlunos = telaRegistrarAlunos;
+window.mudarAbaProf = mudarAbaProf;
+window.mudarAbaExport = mudarAbaExport;
+window.adicionarPalavra = adicionarPalavra;
+window.removerPalavra = removerPalavra;
+window.restaurarPadrao = restaurarPadrao;
+window.exportarCSVAtual = exportarCSVAtual;
+window.copiarAtual = copiarAtual;
+window.limparRegistros = limparRegistros;
+window.adicionarAlunoNaFila = adicionarAlunoNaFila;
+window.removerAlunoFila = removerAlunoFila;
+window.sortearTimes = sortearTimes;
+window.iniciarRodadas = iniciarRodadas;
+window.proximoAluno = proximoAluno;
+window.confirmarEncerramento = confirmarEncerramento;
+window.executarEncerramento = executarEncerramento;
+window.confirmarSair = confirmarSair;
+window.executarSaida = executarSaida;
+window.fecharModal = fecharModal;
+window.executarLimpeza = executarLimpeza;
+window.verDetalheRodada = verDetalheRodada;
+window.verRegistrosDaData = verRegistrosDaData;
+</script>
+</body>
+</html>
